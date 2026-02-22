@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\BukuController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +19,25 @@ use App\Http\Controllers\BukuController;
 Auth::routes([
     'register' => false,
 ]);
+
+// =========================
+// GOOGLE LOGIN
+// =========================
+Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])
+    ->name('google.login');
+
+Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])
+    ->name('google.callback');
+
+// =========================
+// OTP VERIFICATION
+// =========================
+Route::get('/verifikasi-otp', function () {
+    return view('auth.otp');
+})->name('otp.form');
+
+Route::post('/verifikasi-otp', [AuthController::class, 'verifyOtp'])
+    ->name('otp.verify');
 
 // =========================
 // ROOT
