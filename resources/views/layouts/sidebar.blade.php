@@ -39,15 +39,21 @@
             </a>
         </li>
 
-        {{-- ADMIN ONLY --}}
-        @if(auth()->user()->role == 'admin')
-        <li class="nav-item">
-            <a class="nav-link" href="#">
-                <span class="menu-title">User Management</span>
-                <i class="mdi mdi-account-group menu-icon"></i>
+        {{-- SERTIFIKAT --}}
+        <li class="nav-item {{ request()->routeIs('pdf.sertifikat') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('pdf.sertifikat') }}" target="_blank">
+                <span class="menu-title">Sertifikat</span>
+                <i class="mdi mdi-certificate-outline menu-icon"></i>
             </a>
         </li>
-        @endif
+
+        {{-- UNDANGAN --}}
+        <li class="nav-item {{ request()->routeIs('pdf.undangan') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('pdf.undangan') }}" target="_blank">
+                <span class="menu-title">Undangan</span>
+                <i class="mdi mdi-email-outline menu-icon"></i>
+            </a>
+        </li>
 
     </ul>
 </nav>
