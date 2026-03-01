@@ -7,6 +7,7 @@ use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\BukuController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PdfController;
+use App\Http\Controllers\BarangController;
 
 Auth::routes(['register' => false]);
 
@@ -55,26 +56,56 @@ Route::middleware('auth')->group(function () {
     })->name('profile');
 
     // ========================================
-    // PDF (Role-aware di controller)
+    // PDF
     // ========================================
     Route::get('/pdf/sertifikat', [PdfController::class, 'sertifikat'])
         ->name('pdf.sertifikat');
 
     Route::get('/pdf/undangan', [PdfController::class, 'undangan'])
         ->name('pdf.undangan');
+
+    // ========================================
+    // BARANG (VIEW + CETAK)
+    // ========================================
+    Route::get('/barang', [BarangController::class, 'index'])
+        ->name('barang.index');
+
+    Route::post('/barang/cetak-label', [BarangController::class, 'cetakLabel'])
+        ->name('barang.cetak');
 });
+
 
 // ══════════════════════════════════════════
 // ADMIN ONLY
 // ══════════════════════════════════════════
 Route::middleware(['auth', 'admin'])->group(function () {
 
+    // ========================================
+    // KATEGORI
+    // ========================================
     Route::resource('kategori', KategoriController::class)
         ->except(['index', 'show']);
 
+    // ========================================
+    // BUKU
+    // ========================================
     Route::resource('buku', BukuController::class)
         ->except(['index', 'show']);
+
+    // ========================================
+    // BARANG (CRUD)
+    // ========================================
+    Route::get('/barang/create', [BarangController::class, 'create'])
+        ->name('barang.create');
+
+    Route::post('/barang', [BarangController::class, 'store'])
+        ->name('barang.store');
+
+    Route::put('/barang/{id}', [BarangController::class, 'update'])
+        ->name('barang.update');
+
 });
+
 
 // ============================================
 // FALLBACK
