@@ -37,6 +37,7 @@ Route::get('/', function () {
     return redirect()->route('dashboard');
 });
 
+
 // ══════════════════════════════════════════
 // SEMUA USER LOGIN
 // ══════════════════════════════════════════
@@ -65,13 +66,15 @@ Route::middleware('auth')->group(function () {
         ->name('pdf.undangan');
 
     // ========================================
-    // BARANG (VIEW + CETAK)
+    // BARANG (VIEW + CETAK) - semua user
+    // ⚠️ /barang/label harus SEBELUM route admin /{id}
     // ========================================
     Route::get('/barang', [BarangController::class, 'index'])
         ->name('barang.index');
 
-    Route::post('/barang/cetak-label', [BarangController::class, 'cetakLabel'])
-        ->name('barang.cetak');
+    Route::post('/barang/label', [BarangController::class, 'label'])
+        ->name('barang.label');
+
 });
 
 
@@ -93,16 +96,28 @@ Route::middleware(['auth', 'admin'])->group(function () {
         ->except(['index', 'show']);
 
     // ========================================
-    // BARANG (CRUD)
+    // BARANG (CRUD) - admin only
     // ========================================
+
+    // CREATE
     Route::get('/barang/create', [BarangController::class, 'create'])
         ->name('barang.create');
 
+    // STORE
     Route::post('/barang', [BarangController::class, 'store'])
         ->name('barang.store');
 
+    // EDIT
+    Route::get('/barang/{id}/edit', [BarangController::class, 'edit'])
+        ->name('barang.edit');
+
+    // UPDATE
     Route::put('/barang/{id}', [BarangController::class, 'update'])
         ->name('barang.update');
+
+    // DELETE
+    Route::delete('/barang/{id}', [BarangController::class, 'destroy'])
+        ->name('barang.destroy');
 
 });
 

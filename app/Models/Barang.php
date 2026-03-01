@@ -8,13 +8,12 @@ class Barang extends Model
 {
     protected $table = 'barang';
 
-    protected $primaryKey = 'id_barang'; // PK kamu
+    protected $primaryKey = 'id_barang';
 
-    public $incrementing = false; // karena string (BRG001)
+    public $incrementing = false; // karena varchar
+    protected $keyType = 'string';
 
-    protected $keyType = 'string'; // tipe PK
-
-    public $timestamps = false; // MATIKAN timestamp
+    public $timestamps = false;
 
     protected $fillable = [
         'id_barang',
