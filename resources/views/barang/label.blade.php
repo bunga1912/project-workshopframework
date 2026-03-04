@@ -6,45 +6,52 @@
 
     <style>
     @page {
-    size: 210mm 167mm;
-    margin: 11.5mm 10mm;
+    margin: 0;
     }
 
     body {
     margin: 0;
-    padding: 0;
+    background-color: #fff2bf; /* warna kertas kuning */
+    width: 210mm;
+    height: 167mm;
     }
 
+    /* ===== TABEL STIKER ===== */
     table {
-    width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 2mm 2mm; /* 0,3 cm samping | 0,2 cm bawah */
+    margin: 0 auto;
     }
 
     td {
-    width: 38mm;
-    height: 18mm;
+    width: 38mm;   /* 3,8 cm */
+    height: 18mm;  /* 1,8 cm */
+    background: #ffffff; /* label putih */
+    border: 0.3 px solid #000; /* border per label */
+    border-radius: 10px; /* lengkungan */
     text-align: center;
     vertical-align: middle;
-    padding: 2px;
-    box-sizing: border-box;
-    border: 1px solid #000;
     }
 
+    /* ===== ISI TAG ===== */
     .nama {
-    font-size: 7px;
+    font-size: 7pt;
     font-weight: bold;
+    line-height: 1.1;
+    }
+
+    .kode {
+    font-size: 6pt;
     }
 
     .harga {
-    font-size: 8px;
-    margin-top: 1px;
-    }
-    @media print {
-    td {
-        border: none; 
-    }
+    font-size: 9pt;
+    font-weight: bold;
     }
 
+    .footer {
+    font-size: 5pt;
+    }
     </style>
 </head>
 <body>
