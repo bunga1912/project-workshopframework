@@ -22,11 +22,11 @@
 
         <div class="row mb-3">
             <div class="col-md-3">
-                <label>Start X</label>
+                <label>Start X (1-5)</label>
                 <input type="number" name="start_x" class="form-control" min="1" max="5" required>
             </div>
             <div class="col-md-3">
-                <label>Start Y</label>
+                <label>Start Y (1-8)</label>
                 <input type="number" name="start_y" class="form-control" min="1" max="8" required>
             </div>
         </div>

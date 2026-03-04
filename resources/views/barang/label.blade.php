@@ -6,46 +6,45 @@
 
     <style>
     @page {
-        size: A4;
-        margin: 13mm 6mm; /* sesuai margin kertas 108 */
+    size: 210mm 167mm;
+    margin: 11.5mm 10mm;
     }
 
     body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
+    margin: 0;
+    padding: 0;
     }
 
     table {
-        width: 100%;
-        border-collapse: collapse;
+    width: 100%;
+    border-collapse: collapse;
     }
 
     td {
-        width: 20%;        /* 5 kolom */
-        height: 18mm;      /* tinggi per label kertas 108 */
-        border: 1px dashed #ccc;
-        text-align: center;
-        vertical-align: middle;
-        padding: 2px;
-        box-sizing: border-box;
+    width: 38mm;
+    height: 18mm;
+    text-align: center;
+    vertical-align: middle;
+    padding: 2px;
+    box-sizing: border-box;
+    border: 1px solid #000;
     }
 
     .nama {
-        font-size: 8px;
-        font-weight: bold;
+    font-size: 7px;
+    font-weight: bold;
     }
 
     .harga {
-        font-size: 9px;
-        margin-top: 2px;
+    font-size: 8px;
+    margin-top: 1px;
+    }
+    @media print {
+    td {
+        border: none; 
+    }
     }
 
-    @media print {
-        td {
-            border: 1px dashed #ccc;
-        }
-    }
     </style>
 </head>
 <body>
