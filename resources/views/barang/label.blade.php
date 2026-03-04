@@ -7,7 +7,7 @@
     <style>
     @page {
         size: A4;
-        margin: 10mm 8mm; /* sesuai margin kertas 108 */
+        margin: 13mm 6mm; /* sesuai margin kertas 108 */
     }
 
     body {
@@ -23,22 +23,22 @@
 
     td {
         width: 20%;        /* 5 kolom */
-        height: 33mm;      /* tinggi per label kertas 108 */
+        height: 18mm;      /* tinggi per label kertas 108 */
         border: 1px dashed #ccc;
         text-align: center;
         vertical-align: middle;
-        padding: 3px;
+        padding: 2px;
         box-sizing: border-box;
     }
 
     .nama {
-        font-size: 10px;
+        font-size: 8px;
         font-weight: bold;
     }
 
     .harga {
-        font-size: 12px;
-        margin-top: 4px;
+        font-size: 9px;
+        margin-top: 2px;
     }
 
     @media print {
