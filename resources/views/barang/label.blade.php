@@ -20,7 +20,7 @@
     table {
     border-collapse: separate;
     border-spacing: 2mm 2mm; /* 0,3 cm samping | 0,2 cm bawah */
-    margin: 0 auto;
+    margin: 5mm auto;
     }
 
     td {
@@ -51,6 +51,12 @@
 
     .footer {
     font-size: 5pt;
+    }
+    @media print {
+    body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
     }
     </style>
 </head>
