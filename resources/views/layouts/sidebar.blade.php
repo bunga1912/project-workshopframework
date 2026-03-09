@@ -1,3 +1,4 @@
+```blade id="bq5k1o"
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
     <ul class="nav">
 
@@ -47,6 +48,30 @@
             </a>
         </li>
 
+        {{-- TABLE HTML (SOAL NO 2) --}}
+        <li class="nav-item {{ request()->routeIs('table.html') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('table.html') }}">
+                <span class="menu-title">Table HTML Barang</span>
+                <i class="mdi mdi-table menu-icon"></i>
+            </a>
+        </li>
+
+        {{-- TABLE DATATABLES BARANG --}}
+        <li class="nav-item {{ request()->routeIs('table.datatables') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('table.datatables') }}">
+                <span class="menu-title">Table DataTables Barang</span>
+                <i class="mdi mdi-table-large menu-icon"></i>
+            </a>
+        </li>
+
+        {{-- SELECT KOTA (SOAL NO 4) --}}
+        <li class="nav-item {{ request()->routeIs('select.kota') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('select.kota') }}">
+                <span class="menu-title">Select Kota</span>
+                <i class="mdi mdi-city menu-icon"></i>
+            </a>
+        </li>
+
         {{-- SERTIFIKAT --}}
         <li class="nav-item {{ request()->routeIs('pdf.sertifikat') ? 'active' : '' }}">
             <a class="nav-link" href="{{ route('pdf.sertifikat') }}" target="_blank">
@@ -65,3 +90,4 @@
 
     </ul>
 </nav>
+```

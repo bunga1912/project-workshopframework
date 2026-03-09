@@ -1,3 +1,4 @@
+```php
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -20,6 +21,7 @@ Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])
     ->name('google.callback');
 
+
 // ============================================
 // OTP
 // ============================================
@@ -29,6 +31,7 @@ Route::get('/verifikasi-otp', function () {
 
 Route::post('/verifikasi-otp', [AuthController::class, 'verifyOtp'])
     ->name('otp.verify');
+
 
 // ============================================
 // ROOT
@@ -56,6 +59,7 @@ Route::middleware('auth')->group(function () {
         return view('profile.index');
     })->name('profile');
 
+
     // ========================================
     // PDF
     // ========================================
@@ -65,15 +69,39 @@ Route::middleware('auth')->group(function () {
     Route::get('/pdf/undangan', [PdfController::class, 'undangan'])
         ->name('pdf.undangan');
 
+
     // ========================================
-    // BARANG (VIEW + CETAK) - semua user
-    // ⚠️ /barang/label harus SEBELUM route admin /{id}
+    // BARANG (VIEW + CETAK)
     // ========================================
     Route::get('/barang', [BarangController::class, 'index'])
         ->name('barang.index');
 
     Route::post('/barang/label', [BarangController::class, 'label'])
         ->name('barang.label');
+
+
+    // ========================================
+    // SOAL NOMOR 2 (HTML TABLE)
+    // ========================================
+    Route::get('/table-html', function () {
+        return view('barang.table-html');
+    })->name('table.html');
+
+
+    // ========================================
+    // SOAL NOMOR 2 (DATATABLES)
+    // ========================================
+    Route::get('/table-datatables', function () {
+        return view('barang.table-datatables');
+    })->name('table.datatables');
+
+
+    // ========================================
+    // SOAL NOMOR 4 (SELECT KOTA)
+    // ========================================
+    Route::get('/select-kota', function () {
+        return view('select-kota');
+    })->name('select.kota');
 
 });
 
@@ -96,26 +124,20 @@ Route::middleware(['auth', 'admin'])->group(function () {
         ->except(['index', 'show']);
 
     // ========================================
-    // BARANG (CRUD) - admin only
+    // BARANG (CRUD)
     // ========================================
-
-    // CREATE
     Route::get('/barang/create', [BarangController::class, 'create'])
         ->name('barang.create');
 
-    // STORE
     Route::post('/barang', [BarangController::class, 'store'])
         ->name('barang.store');
 
-    // EDIT
     Route::get('/barang/{id}/edit', [BarangController::class, 'edit'])
         ->name('barang.edit');
 
-    // UPDATE
     Route::put('/barang/{id}', [BarangController::class, 'update'])
         ->name('barang.update');
 
-    // DELETE
     Route::delete('/barang/{id}', [BarangController::class, 'destroy'])
         ->name('barang.destroy');
 
