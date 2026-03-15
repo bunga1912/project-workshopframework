@@ -1,4 +1,3 @@
-```php
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -9,8 +8,10 @@ use App\Http\Controllers\BukuController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\BarangController;
+use App\Http\Controllers\WilayahController;
 
 Auth::routes(['register' => false]);
+
 
 // ============================================
 // GOOGLE LOGIN
@@ -99,9 +100,24 @@ Route::middleware('auth')->group(function () {
     // ========================================
     // SOAL NOMOR 4 (SELECT KOTA)
     // ========================================
-    Route::get('/select-kota', function () {
-        return view('select-kota');
-    })->name('select.kota');
+    Route::get('/select-wilayah', [WilayahController::class, 'index'])
+    ->name('select.wilayah');
+
+
+    // ========================================
+    // WILAYAH INDONESIA (AJAX)
+    // ========================================
+    Route::get('/wilayah', [WilayahController::class, 'index'])
+        ->name('wilayah.index');
+
+    Route::get('/get-kota/{provinsi_id}', [WilayahController::class, 'getKota'])
+        ->name('wilayah.kota');
+
+    Route::get('/get-kecamatan/{kota_id}', [WilayahController::class, 'getKecamatan'])
+        ->name('wilayah.kecamatan');
+
+    Route::get('/get-kelurahan/{kecamatan_id}', [WilayahController::class, 'getKelurahan'])
+        ->name('wilayah.kelurahan');
 
 });
 
