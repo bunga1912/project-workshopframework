@@ -64,8 +64,8 @@
         </li>
 
         {{-- SELECT KOTA (SOAL NO 4) --}}
-        <li class="nav-item {{ request()->routeIs('select.wilayah') ? 'active' : '' }}">
-            <a class="nav-link" href="{{ route('select.wilayah') }}">
+        <li class="nav-item {{ request()->routeIs('wilayah.index') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('wilayah.index') }}">
                 <span class="menu-title">Select Wilayah</span>
                 <i class="mdi mdi-city menu-icon"></i>
             </a>

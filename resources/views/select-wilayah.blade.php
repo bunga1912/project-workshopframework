@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
 
-<h3 class="mb-4">Dependent Dropdown Wilayah Indonesia</h3>
+<h3 class="mb-4">Pilih Wilayah Anda</h3>
 
 <div class="row">
 <div class="col-md-6">
@@ -11,7 +11,7 @@
 <div class="card">
 <div class="card-body">
 
-<!-- PROVINSI -->
+<!-- PROVINSI -->   
 <div class="mb-3">
 <label>Provinsi</label>
 <select id="provinsi" class="form-control">

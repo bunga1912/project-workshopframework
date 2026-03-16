@@ -97,16 +97,7 @@ Route::middleware('auth')->group(function () {
     })->name('table.datatables');
 
 
-    // ========================================
-    // SOAL NOMOR 4 (SELECT KOTA)
-    // ========================================
-    Route::get('/select-wilayah', [WilayahController::class, 'index'])
-    ->name('select.wilayah');
-
-
-    // ========================================
-    // WILAYAH INDONESIA (AJAX)
-    // ========================================
+    #WILAYAH
     Route::get('/wilayah', [WilayahController::class, 'index'])
         ->name('wilayah.index');
 
