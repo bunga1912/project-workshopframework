@@ -63,11 +63,19 @@
             </a>
         </li>
 
-        {{-- SELECT KOTA (SOAL NO 4) --}}
+        {{-- SELECT WILAYAH (SOAL NO 4) --}}
         <li class="nav-item {{ request()->routeIs('wilayah.index') ? 'active' : '' }}">
             <a class="nav-link" href="{{ route('wilayah.index') }}">
                 <span class="menu-title">Select Wilayah</span>
                 <i class="mdi mdi-city menu-icon"></i>
+            </a>
+        </li>
+
+        {{-- POS / KASIR --}}
+        <li class="nav-item {{ request()->routeIs('pos.*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('pos.index') }}">
+                <span class="menu-title">Point Of Sales</span>
+                <i class="mdi mdi-cash-register menu-icon"></i>
             </a>
         </li>
 

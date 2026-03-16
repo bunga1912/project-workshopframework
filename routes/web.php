@@ -9,6 +9,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\WilayahController;
+use App\Http\Controllers\PosController;
 
 Auth::routes(['register' => false]);
 
@@ -112,6 +113,13 @@ Route::middleware('auth')->group(function () {
 
 });
 
+    #POS
+    Route::get('/pos', [PosController::class, 'index'])
+        ->name('pos.index');
+
+    Route::get('/get-barang/{kode}', [PosController::class,'getBarang']);
+
+    Route::post('/simpan-transaksi', [PosController::class,'simpanTransaksi']);
 
 // ══════════════════════════════════════════
 // ADMIN ONLY
