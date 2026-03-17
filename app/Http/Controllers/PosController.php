@@ -46,29 +46,24 @@ class PosController extends Controller
 
     try {
 
-        // simpan penjualan (TANPA created_at)
         $id_penjualan = DB::table('penjualan')->insertGetId([
-            'total' => $request->total,
-            'timestamp' => now() // pakai kolom yang ADA
-        ]);
+        'total' => (int)$request->total,
+        'timestamp' => now()
+],      'id_penjualan'); // 🔥 TAMBAHKAN INI
 
-        // simpan detail
         foreach ($request->items as $item) {
 
             DB::table('penjualan_detail')->insert([
                 'id_penjualan' => $id_penjualan,
                 'id_barang' => $item['id_barang'],
-                'jumlah' => $item['jumlah'],
-                'subtotal' => $item['subtotal']
+                'jumlah' => (int)$item['jumlah'],
+                'subtotal' => (int)$item['subtotal']
             ]);
         }
 
         DB::commit();
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Transaksi berhasil disimpan'
-        ]);
+        return response()->json(['status' => true]);
 
     } catch (\Exception $e) {
 
@@ -76,7 +71,7 @@ class PosController extends Controller
 
         return response()->json([
             'status' => false,
-            'message' => $e->getMessage() // biar keliatan error asli
+            'error' => $e->getMessage()
         ], 500);
     }
 }

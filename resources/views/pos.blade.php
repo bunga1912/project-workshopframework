@@ -278,15 +278,15 @@ items.push({
 id_barang: $(this).find('.id_barang').text(),
 nama: $(this).find('td:eq(1)').text(),
 harga: $(this).find('.harga').text(),
-jumlah: $(this).find('.qty').val(),
-subtotal: $(this).find('.subtotal').text()
+jumlah: parseInt($(this).find('.qty').val()),
+subtotal: parseInt($(this).find('.subtotal').text())
 
 })
 
 })
 
 let data = {
-total: $('#total').text(),
+total: parseInt($('#total').text()),
 items: items
 }
 
