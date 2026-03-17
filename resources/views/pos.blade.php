@@ -6,6 +6,8 @@
 
 <h3 class="mb-4">Point Of Sales (POS)</h3>
 
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
 <div class="card p-3 mb-4">
 
 <div class="row g-2 align-items-end">
@@ -87,21 +89,25 @@ let total = 0
 
 
 // ======================
+// CSRF SETUP
+// ======================
+$.ajaxSetup({
+headers:{
+'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+}
+})
+
+
+// ======================
 // ENTER CARI BARANG
 // ======================
-
 $('#id_barang').keypress(function(e){
 
 if(e.which == 13){
 
 let id = $(this).val()
 
-$.ajax({
-
-url:'/get-barang/'+id,
-type:'GET',
-
-success:function(res){
+$.get('/get-barang/' + id, function(res){
 
 if(res.status){
 
@@ -114,26 +120,20 @@ $('#btnTambah').prop('disabled', false)
 }else{
 
 Swal.fire('Error','Barang tidak ditemukan','error')
-
 resetForm()
 
 }
 
-}
-
 })
 
 }
 
 })
-
-
 
 
 // ======================
 // VALIDASI JUMLAH
 // ======================
-
 $('#jumlah').on('keyup change',function(){
 
 let qty = $(this).val()
@@ -147,12 +147,9 @@ $('#btnTambah').prop('disabled', true)
 })
 
 
-
-
 // ======================
 // TAMBAH KE TABLE
 // ======================
-
 $('#btnTambah').click(function(){
 
 let id = $('#id_barang').val()
@@ -161,7 +158,6 @@ let harga = parseInt($('#harga').val())
 let jumlah = parseInt($('#jumlah').val())
 
 let subtotal = harga * jumlah
-
 let found = false
 
 $('#tablePOS tbody tr').each(function(){
@@ -171,14 +167,10 @@ let idTable = $(this).find('.id_barang').text()
 if(idTable == id){
 
 let qty = parseInt($(this).find('.qty').val())
-
 qty += jumlah
 
 $(this).find('.qty').val(qty)
-
-let newSubtotal = harga * qty
-
-$(this).find('.subtotal').text(newSubtotal)
+$(this).find('.subtotal').text(harga * qty)
 
 found = true
 
@@ -186,26 +178,16 @@ found = true
 
 })
 
-
 if(!found){
 
 let row = `
 <tr>
-
 <td class="id_barang">${id}</td>
 <td>${nama}</td>
 <td class="harga">${harga}</td>
-
-<td>
-<input type="number" class="form-control qty" value="${jumlah}" min="1">
-</td>
-
+<td><input type="number" class="form-control qty" value="${jumlah}" min="1"></td>
 <td class="subtotal">${subtotal}</td>
-
-<td>
-<button class="btn btn-danger btnHapus">Hapus</button>
-</td>
-
+<td><button class="btn btn-danger btnHapus">Hapus</button></td>
 </tr>
 `
 
@@ -219,57 +201,42 @@ resetForm()
 })
 
 
-
-
 // ======================
 // UPDATE JUMLAH
 // ======================
-
 $(document).on('change','.qty',function(){
 
 let row = $(this).closest('tr')
-
 let harga = parseInt(row.find('.harga').text())
 let qty = parseInt($(this).val())
 
-let subtotal = harga * qty
-
-row.find('.subtotal').text(subtotal)
+row.find('.subtotal').text(harga * qty)
 
 hitungTotal()
 
 })
 
 
-
-
 // ======================
-// HAPUS BARANG
+// HAPUS
 // ======================
-
 $(document).on('click','.btnHapus',function(){
 
 $(this).closest('tr').remove()
-
 hitungTotal()
 
 })
 
 
-
-
 // ======================
-// HITUNG TOTAL
+// TOTAL
 // ======================
-
 function hitungTotal(){
 
 total = 0
 
 $('.subtotal').each(function(){
-
 total += parseInt($(this).text())
-
 })
 
 $('#total').text(total)
@@ -277,12 +244,9 @@ $('#total').text(total)
 }
 
 
-
-
 // ======================
-// RESET FORM
+// RESET
 // ======================
-
 function resetForm(){
 
 $('#id_barang').val('')
@@ -295,12 +259,9 @@ $('#btnTambah').prop('disabled', true)
 }
 
 
-
-
 // ======================
 // BAYAR
 // ======================
-
 $('#btnBayar').click(function(){
 
 let btn = this
@@ -312,29 +273,22 @@ let items = []
 
 $('#tablePOS tbody tr').each(function(){
 
-let item = {
+items.push({
 
-kode: $(this).find('.id_barang').text(),
+id_barang: $(this).find('.id_barang').text(),
 nama: $(this).find('td:eq(1)').text(),
 harga: $(this).find('.harga').text(),
 jumlah: $(this).find('.qty').val(),
 subtotal: $(this).find('.subtotal').text()
 
-}
-
-items.push(item)
+})
 
 })
 
-
 let data = {
-
 total: $('#total').text(),
 items: items
-
 }
-
-
 
 $.ajax({
 
@@ -342,30 +296,39 @@ url:'/simpan-transaksi',
 type:'POST',
 data:data,
 
-headers:{
-'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-},
-
 success:function(res){
 
 Swal.fire(
 'Berhasil',
 'Transaksi berhasil disimpan',
 'success'
-).then(()=>{
-location.reload()
-})
+).then(()=> location.reload())
 
 },
 
-error:function(){
+error:function(err){
+
+console.log(err.responseJSON)
 
 Swal.fire(
 'Error',
-'Gagal menyimpan transaksi',
+err.responseJSON?.error || 'Gagal menyimpan transaksi',
 'error'
 )
+
+},
+
+complete:function(){
+
+btn.disabled = false
+btn.innerHTML = "Bayar"
 
 }
 
 })
+
+})
+
+</script>
+
+@endpush
