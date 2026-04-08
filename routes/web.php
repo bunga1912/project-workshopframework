@@ -10,9 +10,10 @@ use App\Http\Controllers\PdfController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\WilayahController;
 use App\Http\Controllers\PosController;
+use App\Http\Controllers\PesananController;
+use App\Http\Controllers\MenuController;
 
 Auth::routes(['register' => false]);
-
 
 // ============================================
 // GOOGLE LOGIN
@@ -36,16 +37,38 @@ Route::post('/verifikasi-otp', [AuthController::class, 'verifyOtp'])
 
 
 // ============================================
-// ROOT
+// 🔥 ROOT = HALAMAN PERTAMA (PESANAN)
 // ============================================
-Route::get('/', function () {
-    return redirect()->route('dashboard');
+Route::get('/', [PesananController::class, 'index'])->name('home');
+
+
+// ============================================
+// 🔥 CUSTOMER (TANPA LOGIN)
+// ============================================
+Route::prefix('pesanan')->group(function () {
+
+    Route::get('/', [PesananController::class, 'index'])
+        ->name('pesanan.index');
+
+    Route::get('/get-menu/{id}', [PesananController::class, 'getMenu'])
+        ->name('pesanan.getMenu');
+
+    Route::post('/simpan', [PesananController::class, 'simpanPesanan'])
+        ->name('pesanan.simpan');
+    // 🔥 MIDTRANS CHECKOUT
+    Route::get('/checkout/{id}', [PesananController::class, 'checkout'])->name('pesanan.checkout');
 });
 
 
-// ══════════════════════════════════════════
-// SEMUA USER LOGIN
-// ══════════════════════════════════════════
+// ============================================
+// 🔔 CALLBACK MIDTRANS
+// ============================================
+Route::post('/midtrans-callback', [PesananController::class, 'callback']);
+
+
+// ============================================
+// 🔐 USER LOGIN (ADMIN & VENDOR)
+// ============================================
 Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [HomeController::class, 'index'])
@@ -61,7 +84,6 @@ Route::middleware('auth')->group(function () {
         return view('profile.index');
     })->name('profile');
 
-
     // ========================================
     // PDF
     // ========================================
@@ -71,9 +93,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/pdf/undangan', [PdfController::class, 'undangan'])
         ->name('pdf.undangan');
 
-
     // ========================================
-    // BARANG (VIEW + CETAK)
+    // BARANG (VIEW)
     // ========================================
     Route::get('/barang', [BarangController::class, 'index'])
         ->name('barang.index');
@@ -81,87 +102,59 @@ Route::middleware('auth')->group(function () {
     Route::post('/barang/label', [BarangController::class, 'label'])
         ->name('barang.label');
 
-
     // ========================================
-    // SOAL NOMOR 2 (HTML TABLE)
+    // WILAYAH
     // ========================================
-    Route::get('/table-html', function () {
-        return view('barang.table-html');
-    })->name('table.html');
-
-
-    // ========================================
-    // SOAL NOMOR 2 (DATATABLES)
-    // ========================================
-    Route::get('/table-datatables', function () {
-        return view('barang.table-datatables');
-    })->name('table.datatables');
-
-
-    #WILAYAH
     Route::get('/wilayah', [WilayahController::class, 'index'])
         ->name('wilayah.index');
 
-    Route::get('/get-kota/{provinsi_id}', [WilayahController::class, 'getKota'])
-        ->name('wilayah.kota');
-
-    Route::get('/get-kecamatan/{kota_id}', [WilayahController::class, 'getKecamatan'])
-        ->name('wilayah.kecamatan');
-
-    Route::get('/get-kelurahan/{kecamatan_id}', [WilayahController::class, 'getKelurahan'])
-        ->name('wilayah.kelurahan');
-
+    Route::get('/get-kota/{provinsi_id}', [WilayahController::class, 'getKota']);
+    Route::get('/get-kecamatan/{kota_id}', [WilayahController::class, 'getKecamatan']);
+    Route::get('/get-kelurahan/{kecamatan_id}', [WilayahController::class, 'getKelurahan']);
 });
 
-    #POS
-    Route::get('/pos', [PosController::class, 'index'])
-        ->name('pos.index');
 
-    Route::get('/get-barang/{kode}', [PosController::class,'getBarang']);
+// ============================================
+// 🏪 VENDOR ONLY (CRUD MENU)
+// ============================================
+Route::middleware(['auth', 'isVendor'])->group(function () {
 
-    Route::post('/simpan-transaksi', [PosController::class,'simpanTransaksi']);
+    Route::resource('/menu', MenuController::class);
+});
 
-// ══════════════════════════════════════════
-// ADMIN ONLY
-// ══════════════════════════════════════════
+
+// ============================================
+// POS (PUBLIC)
+// ============================================
+Route::get('/pos', [PosController::class, 'index'])
+    ->name('pos.index');
+
+Route::get('/get-barang/{kode}', [PosController::class,'getBarang']);
+Route::post('/simpan-transaksi', [PosController::class,'simpanTransaksi']);
+
+
+// ============================================
+// 🔐 ADMIN ONLY
+// ============================================
 Route::middleware(['auth', 'admin'])->group(function () {
 
-    // ========================================
-    // KATEGORI
-    // ========================================
     Route::resource('kategori', KategoriController::class)
         ->except(['index', 'show']);
 
-    // ========================================
-    // BUKU
-    // ========================================
     Route::resource('buku', BukuController::class)
         ->except(['index', 'show']);
 
-    // ========================================
-    // BARANG (CRUD)
-    // ========================================
-    Route::get('/barang/create', [BarangController::class, 'create'])
-        ->name('barang.create');
-
-    Route::post('/barang', [BarangController::class, 'store'])
-        ->name('barang.store');
-
-    Route::get('/barang/{id}/edit', [BarangController::class, 'edit'])
-        ->name('barang.edit');
-
-    Route::put('/barang/{id}', [BarangController::class, 'update'])
-        ->name('barang.update');
-
-    Route::delete('/barang/{id}', [BarangController::class, 'destroy'])
-        ->name('barang.destroy');
-
+    Route::get('/barang/create', [BarangController::class, 'create']);
+    Route::post('/barang', [BarangController::class, 'store']);
+    Route::get('/barang/{id}/edit', [BarangController::class, 'edit']);
+    Route::put('/barang/{id}', [BarangController::class, 'update']);
+    Route::delete('/barang/{id}', [BarangController::class, 'destroy']);
 });
 
 
 // ============================================
-// FALLBACK
+// 🔥 FALLBACK → BALIK KE PESANAN
 // ============================================
 Route::fallback(function () {
-    return redirect()->route('dashboard');
+    return redirect('/');
 });

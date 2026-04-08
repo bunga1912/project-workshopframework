@@ -6,11 +6,10 @@
             <a href="#" class="nav-link">
                 <div class="nav-profile-image">
                     <img src="{{ asset('assets/images/faces/face1.jpg') }}" alt="profile">
-                    <span class="login-status online"></span>
                 </div>
                 <div class="nav-profile-text d-flex flex-column">
                     <span class="font-weight-bold mb-2">{{ auth()->user()->name }}</span>
-                    <span class="text-secondary text-small">{{ auth()->user()->role }}</span>
+                    <span class="text-secondary text-small">Admin</span>
                 </div>
             </a>
         </li>
@@ -35,7 +34,7 @@
         <li class="nav-item {{ request()->routeIs('buku.*') ? 'active' : '' }}">
             <a class="nav-link" href="{{ route('buku.index') }}">
                 <span class="menu-title">Buku</span>
-                <i class="mdi mdi-book-open-page-variant menu-icon"></i>
+                <i class="mdi mdi-book menu-icon"></i>
             </a>
         </li>
 
@@ -43,55 +42,38 @@
         <li class="nav-item {{ request()->routeIs('barang.*') ? 'active' : '' }}">
             <a class="nav-link" href="{{ route('barang.index') }}">
                 <span class="menu-title">Barang</span>
-                <i class="mdi mdi-package-variant menu-icon"></i>
+                <i class="mdi mdi-package menu-icon"></i>
             </a>
         </li>
 
-        {{-- TABLE HTML (SOAL NO 2) --}}
-        <li class="nav-item {{ request()->routeIs('table.html') ? 'active' : '' }}">
-            <a class="nav-link" href="{{ route('table.html') }}">
-                <span class="menu-title">Table HTML Barang</span>
-                <i class="mdi mdi-table menu-icon"></i>
-            </a>
-        </li>
-
-        {{-- TABLE DATATABLES BARANG --}}
-        <li class="nav-item {{ request()->routeIs('table.datatables') ? 'active' : '' }}">
-            <a class="nav-link" href="{{ route('table.datatables') }}">
-                <span class="menu-title">Table DataTables Barang</span>
-                <i class="mdi mdi-table-large menu-icon"></i>
-            </a>
-        </li>
-
-        {{-- SELECT WILAYAH (SOAL NO 4) --}}
-        <li class="nav-item {{ request()->routeIs('wilayah.index') ? 'active' : '' }}">
+        {{-- WILAYAH --}}
+        <li class="nav-item {{ request()->routeIs('wilayah.*') ? 'active' : '' }}">
             <a class="nav-link" href="{{ route('wilayah.index') }}">
-                <span class="menu-title">Select Wilayah</span>
+                <span class="menu-title">Wilayah</span>
                 <i class="mdi mdi-city menu-icon"></i>
             </a>
         </li>
 
-        {{-- POS / KASIR --}}
+        {{-- POS --}}
         <li class="nav-item {{ request()->routeIs('pos.*') ? 'active' : '' }}">
             <a class="nav-link" href="{{ route('pos.index') }}">
-                <span class="menu-title">Point Of Sales</span>
+                <span class="menu-title">POS</span>
                 <i class="mdi mdi-cash-register menu-icon"></i>
             </a>
         </li>
 
-        {{-- SERTIFIKAT --}}
+        {{-- PDF --}}
         <li class="nav-item {{ request()->routeIs('pdf.sertifikat') ? 'active' : '' }}">
             <a class="nav-link" href="{{ route('pdf.sertifikat') }}" target="_blank">
                 <span class="menu-title">Sertifikat</span>
-                <i class="mdi mdi-certificate-outline menu-icon"></i>
+                <i class="mdi mdi-certificate menu-icon"></i>
             </a>
         </li>
 
-        {{-- UNDANGAN --}}
         <li class="nav-item {{ request()->routeIs('pdf.undangan') ? 'active' : '' }}">
             <a class="nav-link" href="{{ route('pdf.undangan') }}" target="_blank">
                 <span class="menu-title">Undangan</span>
-                <i class="mdi mdi-email-outline menu-icon"></i>
+                <i class="mdi mdi-email menu-icon"></i>
             </a>
         </li>
 

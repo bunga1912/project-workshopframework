@@ -25,7 +25,13 @@
     <div class="container-fluid page-body-wrapper">
 
         {{-- SIDEBAR --}}
-        @include('layouts.sidebar')
+        @auth
+        @if(auth()->user()->role == 'admin')
+            @include('layouts.sidebaradmin')
+        @elseif(auth()->user()->role == 'vendor')
+            @include('layouts.sidebarvendor')
+        @endif
+        @endauth
 
         {{-- MAIN PANEL --}}
         <div class="main-panel">

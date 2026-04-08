@@ -1,0 +1,14 @@
+<?php
+
+return [
+
+    'driver' => env('HASH_DRIVER', 'bcrypt'),
+
+    'bcrypt' => [
+        'rounds' => env('BCRYPT_ROUNDS', 10),
+
+        // 🔥 TAMBAHKAN INI
+        'verify' => false,
+    ],
+
+];

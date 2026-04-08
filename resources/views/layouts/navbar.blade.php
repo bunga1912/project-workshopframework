@@ -31,6 +31,16 @@
 
     <ul class="navbar-nav navbar-nav-right">
 
+      {{-- 🔥 TOMBOL LOGIN ADMIN/VENDOR --}}
+      @guest
+      <li class="nav-item d-flex align-items-center mr-3">
+        <a href="{{ route('login') }}" class="btn btn-sm btn-outline-primary">
+          Login Admin / Vendor
+        </a>
+      </li>
+      @endguest
+
+
       {{-- PROFILE --}}
       <li class="nav-item nav-profile dropdown">
         <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
@@ -38,17 +48,38 @@
             <img src="{{ asset('assets/images/faces/face1.jpg') }}" alt="image">
             <span class="availability-status online"></span>
           </div>
+
           <div class="nav-profile-text">
-            <p class="mb-1 text-black">{{ auth()->user()->name }}</p>
+            @if(auth()->check())
+                <p class="mb-1 text-black">{{ auth()->user()->name }}</p>
+            @else
+                <p class="mb-1 text-black">Customer</p>
+            @endif
           </div>
         </a>
+
+        {{-- DROPDOWN --}}
         <div class="dropdown-menu navbar-dropdown">
-          <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button class="dropdown-item">
-              <i class="mdi mdi-logout mr-2 text-primary"></i> Signout
-            </button>
-          </form>
+
+          @auth
+              <a href="{{ route('dashboard') }}" class="dropdown-item">
+                  <i class="mdi mdi-view-dashboard mr-2 text-primary"></i> Dashboard
+              </a>
+
+              <form method="POST" action="{{ route('logout') }}">
+                  @csrf
+                  <button class="dropdown-item">
+                      <i class="mdi mdi-logout mr-2 text-primary"></i> Logout
+                  </button>
+              </form>
+          @endauth
+
+          @guest
+              <a href="{{ route('login') }}" class="dropdown-item">
+                  <i class="mdi mdi-login mr-2 text-primary"></i> Login
+              </a>
+          @endguest
+
         </div>
       </li>
 
@@ -82,7 +113,7 @@
         </a>
       </li>
 
-      {{-- RIGHT SIDEBAR TOGGLE --}}
+      {{-- RIGHT SIDEBAR --}}
       <li class="nav-item nav-settings d-none d-lg-block">
         <a class="nav-link" href="#">
           <i class="mdi mdi-format-line-spacing"></i>
