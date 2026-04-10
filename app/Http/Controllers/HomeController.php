@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Buku;
-use App\Models\Kategori;
 use App\Models\User;
+use App\Models\Vendor;
+use App\Models\Menu;
+use App\Models\Pesanan;
 
 class HomeController extends Controller
 {
@@ -15,13 +16,15 @@ class HomeController extends Controller
 
     public function index()
     {
-        $totalBuku = Buku::count();
-        $totalKategori = Kategori::count();
-        $totalUser = User::count();
+        $totalVendor  = Vendor::count();
+        $totalMenu    = Menu::count();
+        $totalPesanan = Pesanan::count();
+        $totalUser    = User::count();
 
         return view('home', compact(
-            'totalBuku',
-            'totalKategori',
+            'totalVendor',
+            'totalMenu',
+            'totalPesanan',
             'totalUser'
         ));
     }

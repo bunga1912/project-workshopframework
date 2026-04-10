@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Menu;
 use App\Models\Vendor;
+use Illuminate\Support\Facades\DB;
 
 class MenuController extends Controller
 {
@@ -33,7 +34,7 @@ class MenuController extends Controller
     }
 
     // ============================
-    // SIMPAN MENU + FOTO 🔥
+    // SIMPAN MENU + FOTO
     // ============================
     public function store(Request $request)
     {
@@ -49,10 +50,8 @@ class MenuController extends Controller
             abort(403, 'Vendor tidak ditemukan');
         }
 
-        // 🔥 Bersihkan format harga (10.000 → 10000)
         $harga = str_replace('.', '', $request->harga);
 
-        // 🔥 Upload gambar
         $path = null;
         if ($request->hasFile('path_gambar')) {
             $path = $request->file('path_gambar')->store('menu', 'public');
@@ -86,7 +85,7 @@ class MenuController extends Controller
     }
 
     // ============================
-    // UPDATE MENU + FOTO 🔥
+    // UPDATE MENU + FOTO
     // ============================
     public function update(Request $request, $id)
     {
@@ -104,14 +103,11 @@ class MenuController extends Controller
             abort(403);
         }
 
-        // 🔥 Bersihkan harga
         $harga = str_replace('.', '', $request->harga);
 
-        // 🔥 Update data dasar
         $menu->nama_menu = $request->nama_menu;
-        $menu->harga = $harga;
+        $menu->harga     = $harga;
 
-        // 🔥 Update gambar kalau ada
         if ($request->hasFile('path_gambar')) {
             $path = $request->file('path_gambar')->store('menu', 'public');
             $menu->path_gambar = $path;
@@ -148,5 +144,40 @@ class MenuController extends Controller
     public function show($id)
     {
         return redirect()->route('menu.index');
+    }
+
+    // ============================
+    // PESANAN MASUK (VENDOR)
+    // ============================
+    public function pesananMasuk()
+    {
+        $vendor = Vendor::where('user_id', auth()->id())->first();
+
+        if (!$vendor) {
+            abort(403, 'Vendor tidak ditemukan');
+        }
+
+        $pesanan = DB::table('pesanan')
+            ->join('detail_pesanan', 'pesanan.idpesanan', '=', 'detail_pesanan.idpesanan')
+            ->join('menu', 'detail_pesanan.idmenu', '=', 'menu.idmenu')
+            ->where('menu.idvendor', $vendor->idvendor)
+            ->select(
+                'pesanan.idpesanan',
+                'pesanan.nama',
+                'pesanan.timestamp',
+                'pesanan.total',
+                'pesanan.metode_bayar',
+                'pesanan.status_bayar',
+                'menu.nama_menu',
+                'detail_pesanan.jumlah',
+                'detail_pesanan.harga',
+                'detail_pesanan.subtotal',
+                'detail_pesanan.catatan'
+            )
+            ->orderBy('pesanan.timestamp', 'desc')
+            ->get()
+            ->groupBy('idpesanan');
+
+        return view('menu.pesanan-masuk', compact('pesanan'));
     }
 }

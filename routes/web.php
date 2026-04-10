@@ -12,6 +12,7 @@ use App\Http\Controllers\WilayahController;
 use App\Http\Controllers\PosController;
 use App\Http\Controllers\PesananController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\VendorController;
 
 Auth::routes(['register' => false]);
 
@@ -24,7 +25,6 @@ Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])
     ->name('google.callback');
 
-
 // ============================================
 // OTP
 // ============================================
@@ -35,15 +35,13 @@ Route::get('/verifikasi-otp', function () {
 Route::post('/verifikasi-otp', [AuthController::class, 'verifyOtp'])
     ->name('otp.verify');
 
-
 // ============================================
-// 🔥 ROOT = HALAMAN PERTAMA (PESANAN)
+// ROOT = HALAMAN PERTAMA (PESANAN)
 // ============================================
 Route::get('/', [PesananController::class, 'index'])->name('home');
 
-
 // ============================================
-// 🔥 CUSTOMER (TANPA LOGIN)
+// CUSTOMER (TANPA LOGIN)
 // ============================================
 Route::prefix('pesanan')->group(function () {
 
@@ -55,19 +53,18 @@ Route::prefix('pesanan')->group(function () {
 
     Route::post('/simpan', [PesananController::class, 'simpanPesanan'])
         ->name('pesanan.simpan');
-    // 🔥 MIDTRANS CHECKOUT
-    Route::get('/checkout/{id}', [PesananController::class, 'checkout'])->name('pesanan.checkout');
+
+    Route::get('/checkout/{id}', [PesananController::class, 'checkout'])
+        ->name('pesanan.checkout');
 });
 
-
 // ============================================
-// 🔔 CALLBACK MIDTRANS
+// CALLBACK MIDTRANS
 // ============================================
 Route::post('/midtrans-callback', [PesananController::class, 'callback']);
 
-
 // ============================================
-// 🔐 USER LOGIN (ADMIN & VENDOR)
+// USER LOGIN (ADMIN & VENDOR)
 // ============================================
 Route::middleware('auth')->group(function () {
 
@@ -84,27 +81,18 @@ Route::middleware('auth')->group(function () {
         return view('profile.index');
     })->name('profile');
 
-    // ========================================
-    // PDF
-    // ========================================
     Route::get('/pdf/sertifikat', [PdfController::class, 'sertifikat'])
         ->name('pdf.sertifikat');
 
     Route::get('/pdf/undangan', [PdfController::class, 'undangan'])
         ->name('pdf.undangan');
 
-    // ========================================
-    // BARANG (VIEW)
-    // ========================================
     Route::get('/barang', [BarangController::class, 'index'])
         ->name('barang.index');
 
     Route::post('/barang/label', [BarangController::class, 'label'])
         ->name('barang.label');
 
-    // ========================================
-    // WILAYAH
-    // ========================================
     Route::get('/wilayah', [WilayahController::class, 'index'])
         ->name('wilayah.index');
 
@@ -113,15 +101,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/get-kelurahan/{kecamatan_id}', [WilayahController::class, 'getKelurahan']);
 });
 
-
 // ============================================
-// 🏪 VENDOR ONLY (CRUD MENU)
+// VENDOR ONLY (CRUD MENU + PESANAN MASUK)
 // ============================================
 Route::middleware(['auth', 'isVendor'])->group(function () {
 
     Route::resource('/menu', MenuController::class);
-});
 
+    Route::get('/pesanan-masuk', [MenuController::class, 'pesananMasuk'])
+        ->name('pesanan.masuk');
+});
 
 // ============================================
 // POS (PUBLIC)
@@ -129,12 +118,11 @@ Route::middleware(['auth', 'isVendor'])->group(function () {
 Route::get('/pos', [PosController::class, 'index'])
     ->name('pos.index');
 
-Route::get('/get-barang/{kode}', [PosController::class,'getBarang']);
-Route::post('/simpan-transaksi', [PosController::class,'simpanTransaksi']);
-
+Route::get('/get-barang/{kode}', [PosController::class, 'getBarang']);
+Route::post('/simpan-transaksi', [PosController::class, 'simpanTransaksi']);
 
 // ============================================
-// 🔐 ADMIN ONLY
+// ADMIN ONLY
 // ============================================
 Route::middleware(['auth', 'admin'])->group(function () {
 
@@ -149,11 +137,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/barang/{id}/edit', [BarangController::class, 'edit']);
     Route::put('/barang/{id}', [BarangController::class, 'update']);
     Route::delete('/barang/{id}', [BarangController::class, 'destroy']);
+
+    Route::resource('vendor', VendorController::class);
 });
 
-
 // ============================================
-// 🔥 FALLBACK → BALIK KE PESANAN
+// FALLBACK → BALIK KE PESANAN
 // ============================================
 Route::fallback(function () {
     return redirect('/');

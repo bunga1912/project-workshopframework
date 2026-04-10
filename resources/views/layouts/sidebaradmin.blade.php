@@ -54,6 +54,14 @@
             </a>
         </li>
 
+        {{-- VENDOR --}}
+        <li class="nav-item {{ request()->routeIs('vendor.*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('vendor.index') }}">
+                <span class="menu-title">Vendor</span>
+                <i class="mdi mdi-store menu-icon"></i>
+            </a>
+        </li>
+
         {{-- POS --}}
         <li class="nav-item {{ request()->routeIs('pos.*') ? 'active' : '' }}">
             <a class="nav-link" href="{{ route('pos.index') }}">
@@ -75,6 +83,18 @@
                 <span class="menu-title">Undangan</span>
                 <i class="mdi mdi-email menu-icon"></i>
             </a>
+        </li>
+
+        {{-- LOGOUT --}}
+        <li class="nav-item">
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="nav-link btn btn-block text-left w-100"
+                        style="background:none; border:none; cursor:pointer;">
+                    <span class="menu-title text-danger">Logout</span>
+                    <i class="mdi mdi-logout menu-icon text-danger"></i>
+                </button>
+            </form>
         </li>
 
     </ul>

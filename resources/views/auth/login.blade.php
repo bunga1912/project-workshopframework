@@ -48,7 +48,7 @@
         </div>
 
         {{-- Button Login --}}
-        <div class="mt-3">
+        <div class="mt-3 text-center">
             <button type="submit"
                 class="btn btn-block btn-gradient-primary btn-lg font-weight-medium auth-form-btn">
                 SIGN IN
@@ -61,7 +61,7 @@
         </div>
 
         {{-- Login with Google --}}
-        <div class="mt-2">
+        <div class="mt-2 text-center">
             <a href="{{ route('google.login') }}"
                class="btn btn-block btn-danger btn-lg font-weight-medium">
                 Login with Google

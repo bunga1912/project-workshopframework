@@ -14,7 +14,6 @@ class Pesanan extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'user_id',
         'nama',
         'timestamp',
         'total',

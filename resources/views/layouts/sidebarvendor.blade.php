@@ -21,6 +21,25 @@
                 <i class="mdi mdi-food menu-icon"></i>
             </a>
         </li>
+        {{-- PESANAN MASUK --}}
+        <li class="nav-item {{ request()->routeIs('pesanan.masuk') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('pesanan.masuk') }}">
+                <span class="menu-title">Pesanan Masuk</span>
+                <i class="mdi mdi-clipboard-list menu-icon"></i>
+            </a>
+        </li>
+
+        {{-- LOGOUT --}}
+        <li class="nav-item">
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="nav-link btn btn-block text-left w-100"
+                        style="background:none; border:none; cursor:pointer;">
+                    <span class="menu-title text-danger">Logout</span>
+                    <i class="mdi mdi-logout menu-icon text-danger"></i>
+                </button>
+            </form>
+        </li>
 
     </ul>
 </nav>
