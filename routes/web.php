@@ -64,7 +64,7 @@ Route::prefix('pesanan')->group(function () {
 Route::post('/midtrans-callback', [PesananController::class, 'callback']);
 
 // ============================================
-// USER LOGIN (ADMIN & VENDOR)
+// ADMIN
 // ============================================
 Route::middleware('auth')->group(function () {
 
