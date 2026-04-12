@@ -85,6 +85,14 @@
             </a>
         </li>
 
+        {{-- CUSTOMER --}}
+        <li class="nav-item {{ request()->routeIs('customer.*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('customer.index') }}">
+            <span class="menu-title">Customer</span>
+            <i class="mdi mdi-account-group menu-icon"></i>
+            </a>
+        </li>
+
         {{-- LOGOUT --}}
         <li class="nav-item">
             <form method="POST" action="{{ route('logout') }}">

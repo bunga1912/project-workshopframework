@@ -13,31 +13,11 @@
         align-items: start;
     }
 
-    .katalog-section {}
+    .katalog-header { margin-bottom: 20px; }
+    .katalog-header h3 { font-size: 20px; font-weight: 700; color: #2d3748; margin-bottom: 4px; }
+    .katalog-header p  { color: #718096; font-size: 13px; margin: 0; }
 
-    .katalog-header {
-        margin-bottom: 20px;
-    }
-
-    .katalog-header h3 {
-        font-size: 20px;
-        font-weight: 700;
-        color: #2d3748;
-        margin-bottom: 4px;
-    }
-
-    .katalog-header p {
-        color: #718096;
-        font-size: 13px;
-        margin: 0;
-    }
-
-    .vendor-tabs {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        margin-bottom: 20px;
-    }
+    .vendor-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
 
     .vendor-tab {
         padding: 7px 16px;
@@ -50,17 +30,8 @@
         cursor: pointer;
         transition: all 0.2s;
     }
-
-    .vendor-tab:hover {
-        border-color: #667eea;
-        color: #667eea;
-    }
-
-    .vendor-tab.active {
-        background: #667eea;
-        border-color: #667eea;
-        color: #fff;
-    }
+    .vendor-tab:hover  { border-color: #667eea; color: #667eea; }
+    .vendor-tab.active { background: #667eea; border-color: #667eea; color: #fff; }
 
     .menu-grid {
         display: grid;
@@ -75,27 +46,30 @@
         padding: 14px;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
         gap: 8px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         transition: box-shadow 0.2s;
     }
+    .menu-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 
-    .menu-card:hover {
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    .menu-card-name  { font-size: 14px; font-weight: 600; color: #2d3748; line-height: 1.3; }
+    .menu-card-harga { font-size: 13px; color: #38a169; font-weight: 600; }
+
+    .menu-card-barcode {
+        border-top: 1px dashed #e2e8f0;
+        padding-top: 8px;
+        text-align: center;
     }
-
-    .menu-card-name {
-        font-size: 14px;
-        font-weight: 600;
-        color: #2d3748;
-        line-height: 1.3;
+    .menu-card-barcode img {
+        width: 100%;
+        height: 32px;
+        object-fit: contain;
+        display: block;
     }
-
-    .menu-card-harga {
-        font-size: 13px;
-        color: #38a169;
-        font-weight: 600;
+    .menu-card-barcode small {
+        font-size: 9px;
+        color: #a0aec0;
+        letter-spacing: 2px;
     }
 
     .btn-add-menu {
@@ -110,10 +84,7 @@
         transition: background 0.2s;
         width: 100%;
     }
-
-    .btn-add-menu:hover {
-        background: #5a67d8;
-    }
+    .btn-add-menu:hover { background: #5a67d8; }
 
     .menu-empty {
         color: #a0aec0;
@@ -123,10 +94,7 @@
         grid-column: 1/-1;
     }
 
-    .form-section {
-        position: sticky;
-        top: 20px;
-    }
+    .form-section { position: sticky; top: 20px; }
 
     .card-section {
         background: #fff;
@@ -136,7 +104,6 @@
         margin-bottom: 16px;
         box-shadow: 0 1px 4px rgba(0,0,0,0.06);
     }
-
     .card-section h5 {
         font-size: 14px;
         font-weight: 700;
@@ -167,31 +134,19 @@
         transition: border-color 0.2s;
         width: 100%;
     }
-
     .form-control:focus {
         border-color: #667eea;
         box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
         outline: none;
     }
-
     .form-control.is-invalid {
         border-color: #e53e3e !important;
         box-shadow: 0 0 0 3px rgba(229,62,62,0.12) !important;
     }
 
-    .invalid-msg {
-        font-size: 11px;
-        color: #e53e3e;
-        margin-top: 4px;
-        display: none;
-    }
+    .invalid-msg { font-size: 11px; color: #e53e3e; margin-top: 4px; display: none; }
 
-    .table {
-        font-size: 12px;
-        color: #2d3748;
-        width: 100%;
-    }
-
+    .table { font-size: 12px; color: #2d3748; width: 100%; }
     .table thead th {
         background: #f7fafc;
         color: #718096;
@@ -202,21 +157,9 @@
         border-bottom: 2px solid #e2e8f0;
         padding: 8px 10px;
     }
+    .table tbody td { padding: 8px 10px; vertical-align: middle; border-bottom: 1px solid #f0f4f8; }
 
-    .table tbody td {
-        padding: 8px 10px;
-        vertical-align: middle;
-        border-bottom: 1px solid #f0f4f8;
-    }
-
-    .btn-hapus-item {
-        background: none;
-        border: none;
-        color: #e53e3e;
-        cursor: pointer;
-        font-size: 14px;
-        padding: 0;
-    }
+    .btn-hapus-item { background: none; border: none; color: #e53e3e; cursor: pointer; font-size: 14px; padding: 0; }
 
     .btn-qty {
         background: #edf2f7;
@@ -231,12 +174,7 @@
         color: #2d3748;
         transition: background 0.2s;
     }
-
-    .btn-qty:hover {
-        background: #667eea;
-        color: #fff;
-        border-color: #667eea;
-    }
+    .btn-qty:hover { background: #667eea; color: #fff; border-color: #667eea; }
 
     .total-box {
         background: #f0fff4;
@@ -251,11 +189,7 @@
         justify-content: space-between;
         align-items: center;
     }
-
-    .total-box .total-nominal {
-        color: #38a169;
-        font-size: 16px;
-    }
+    .total-box .total-nominal { color: #38a169; font-size: 16px; }
 
     .btn-pesan {
         background: #38a169;
@@ -269,55 +203,26 @@
         transition: background 0.2s;
         width: 100%;
     }
+    .btn-pesan:hover    { background: #2f855a; }
+    .btn-pesan:disabled { background: #a0aec0; cursor: not-allowed; }
 
-    .btn-pesan:hover {
-        background: #2f855a;
-    }
+    .empty-cart { text-align: center; color: #a0aec0; font-size: 13px; padding: 16px 0; }
 
-    .btn-pesan:disabled {
-        background: #a0aec0;
-        cursor: not-allowed;
-    }
-
-    .empty-cart {
-        text-align: center;
-        color: #a0aec0;
-        font-size: 13px;
-        padding: 16px 0;
-    }
-
-    /* ==============================
-       TOAST NOTIFIKASI
-    ============================== */
     .toast-container {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 9999;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
+        position: fixed; top: 20px; right: 20px;
+        z-index: 9999; display: flex; flex-direction: column; gap: 10px;
     }
-
     .toast {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 14px 18px;
-        border-radius: 10px;
-        font-size: 14px;
-        font-weight: 500;
-        color: #fff;
+        display: flex; align-items: center; gap: 12px;
+        padding: 14px 18px; border-radius: 10px;
+        font-size: 14px; font-weight: 500; color: #fff;
         box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-        animation: slideIn 0.3s ease;
-        min-width: 280px;
+        animation: slideIn 0.3s ease; min-width: 280px;
     }
-
     .toast.success { background: #38a169; }
     .toast.error   { background: #e53e3e; }
     .toast.info    { background: #667eea; }
     .toast.warning { background: #d69e2e; }
-
     .toast-icon { font-size: 18px; }
     .toast-msg  { flex: 1; }
 
@@ -325,23 +230,17 @@
         from { opacity: 0; transform: translateX(60px); }
         to   { opacity: 1; transform: translateX(0); }
     }
-
     @keyframes slideOut {
         from { opacity: 1; transform: translateX(0); }
         to   { opacity: 0; transform: translateX(60px); }
     }
 
     @media (max-width: 768px) {
-        .pesanan-wrapper {
-            grid-template-columns: 1fr;
-        }
-        .form-section {
-            position: static;
-        }
+        .pesanan-wrapper { grid-template-columns: 1fr; }
+        .form-section { position: static; }
     }
 </style>
 
-{{-- TOAST CONTAINER --}}
 <div class="toast-container" id="toast-container"></div>
 
 <div class="pesanan-wrapper">
@@ -402,9 +301,7 @@
         <div class="card-section">
             <h5>Pesanan Kamu</h5>
 
-            <div id="empty-cart" class="empty-cart">
-                🛒 Belum ada menu dipilih
-            </div>
+            <div id="empty-cart" class="empty-cart">🛒 Belum ada menu dipilih</div>
 
             <table class="table" id="tabel" style="display:none">
                 <thead>
@@ -439,30 +336,23 @@
     data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}"></script>
 
 <script>
-let daftarMenu = [];
-let total = 0;
+let daftarMenu    = [];
+let total         = 0;
 let activeVendorId = null;
+let idpesananGlobal = null; // ✅ BARU: simpan idpesanan untuk redirect setelah bayar
 
 // ============================
-// TOAST NOTIFIKASI
+// TOAST
 // ============================
-function showToast(message, type = 'info', duration = 3000){
-    const icons = {
-        success: '✅',
-        error:   '❌',
-        info:    'ℹ️',
-        warning: '⚠️'
-    };
-
+function showToast(message, type = 'info', duration = 3000) {
+    const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
     const toast = $(`
         <div class="toast ${type}">
             <span class="toast-icon">${icons[type]}</span>
             <span class="toast-msg">${message}</span>
         </div>
     `);
-
     $('#toast-container').append(toast);
-
     setTimeout(() => {
         toast.css('animation', 'slideOut 0.3s ease forwards');
         setTimeout(() => toast.remove(), 300);
@@ -470,18 +360,17 @@ function showToast(message, type = 'info', duration = 3000){
 }
 
 // ============================
-// LOAD MENU VENDOR PERTAMA OTOMATIS
+// LOAD VENDOR PERTAMA OTOMATIS
 // ============================
-$(document).ready(function(){
+$(document).ready(function () {
     let firstId = {{ $vendors->first() ? $vendors->first()->idvendor : 'null' }};
-    if(firstId) loadMenuGrid(firstId);
+    if (firstId) loadMenuGrid(firstId);
 
-    $('#vendor').change(function(){
+    $('#vendor').change(function () {
         let id = $(this).val();
-        if(id){
+        if (id) {
             loadMenuGrid(id);
             $('.vendor-tab').removeClass('active');
-            $('.vendor-tab[data-id="' + id + '"]').addClass('active');
         }
         clearError('vendor');
     });
@@ -490,7 +379,7 @@ $(document).ready(function(){
 // ============================
 // KLIK TAB VENDOR
 // ============================
-function pilihVendor(id, el){
+function pilihVendor(id, el) {
     $('.vendor-tab').removeClass('active');
     $(el).addClass('active');
     activeVendorId = id;
@@ -500,14 +389,14 @@ function pilihVendor(id, el){
 }
 
 // ============================
-// LOAD MENU KE GRID
+// LOAD MENU KE GRID (dengan barcode)
 // ============================
-function loadMenuGrid(id){
+function loadMenuGrid(id) {
     activeVendorId = id;
     $('#menu-grid').html('<div class="menu-empty">Memuat menu...</div>');
 
-    $.get('/pesanan/get-menu/' + id, function(data){
-        if(data.length === 0){
+    $.get('/pesanan/get-menu/' + id, function (data) {
+        if (data.length === 0) {
             $('#menu-grid').html('<div class="menu-empty">Menu tidak tersedia</div>');
             return;
         }
@@ -518,14 +407,22 @@ function loadMenuGrid(id){
                 ? `/storage/${m.path_gambar}`
                 : `/assets/images/no-image.png`;
 
+            let barcodeHtml = m.barcodeBase64
+                ? `<div class="menu-card-barcode">
+                       <img src="data:image/png;base64,${m.barcodeBase64}" alt="Barcode ${m.idmenu}">
+                       <small>${m.idmenu}</small>
+                   </div>`
+                : '';
+
             html += `
                 <div class="menu-card">
                     <img src="${gambar}" alt="${m.nama_menu}"
-                         style="width:100%; height:120px; object-fit:cover; border-radius:8px; margin-bottom:8px;">
+                         style="width:100%; height:120px; object-fit:cover; border-radius:8px;">
                     <div>
                         <div class="menu-card-name">${m.nama_menu}</div>
                         <div class="menu-card-harga">Rp ${new Intl.NumberFormat('id-ID').format(m.harga)}</div>
                     </div>
+                    ${barcodeHtml}
                     <button class="btn-add-menu" onclick="tambahDariKartu(${m.idmenu}, '${m.nama_menu}', ${m.harga})">
                         + Tambah
                     </button>
@@ -534,7 +431,7 @@ function loadMenuGrid(id){
         });
 
         $('#menu-grid').html(html);
-    }).fail(function(){
+    }).fail(function () {
         $('#menu-grid').html('<div class="menu-empty">Gagal memuat menu</div>');
     });
 }
@@ -542,15 +439,15 @@ function loadMenuGrid(id){
 // ============================
 // TAMBAH DARI KARTU MENU
 // ============================
-function tambahDariKartu(idmenu, nama_menu, harga){
+function tambahDariKartu(idmenu, nama_menu, harga) {
     let valid = true;
-    if($('#nama').val().trim() === ''){ showError('nama'); valid = false; }
-    if(!$('#vendor').val()){ showError('vendor'); valid = false; }
-    if(!valid) return;
+    if ($('#nama').val().trim() === '') { showError('nama');   valid = false; }
+    if (!$('#vendor').val())            { showError('vendor'); valid = false; }
+    if (!valid) return;
 
     let existing = daftarMenu.findIndex(m => m.idmenu === idmenu);
-    if(existing !== -1){
-        daftarMenu[existing].jumlah += 1;
+    if (existing !== -1) {
+        daftarMenu[existing].jumlah++;
         daftarMenu[existing].subtotal = daftarMenu[existing].jumlah * harga;
         showToast(nama_menu + ' ditambahkan', 'success', 1500);
         renderTabel();
@@ -565,7 +462,7 @@ function tambahDariKartu(idmenu, nama_menu, harga){
 // ============================
 // RENDER TABEL PESANAN
 // ============================
-function renderTabel(){
+function renderTabel() {
     total = 0;
     let tbody = '';
 
@@ -590,36 +487,30 @@ function renderTabel(){
     $('#tabel tbody').html(tbody);
     $('#total').text(new Intl.NumberFormat('id-ID').format(total));
 
-    if(daftarMenu.length === 0){
-        $('#tabel').hide();
-        $('#total-box').hide();
-        $('#empty-cart').show();
+    if (daftarMenu.length === 0) {
+        $('#tabel').hide(); $('#total-box').hide(); $('#empty-cart').show();
     } else {
-        $('#empty-cart').hide();
-        $('#tabel').show();
-        $('#total-box').show();
+        $('#empty-cart').hide(); $('#tabel').show(); $('#total-box').show();
     }
 }
 
 // ============================
 // UBAH QTY
 // ============================
-function ubahQty(index, delta){
+function ubahQty(index, delta) {
     daftarMenu[index].jumlah += delta;
-
-    if(daftarMenu[index].jumlah <= 0){
+    if (daftarMenu[index].jumlah <= 0) {
         daftarMenu.splice(index, 1);
     } else {
         daftarMenu[index].subtotal = daftarMenu[index].jumlah * daftarMenu[index].harga;
     }
-
     renderTabel();
 }
 
 // ============================
 // HAPUS ITEM
 // ============================
-function hapusItem(index){
+function hapusItem(index) {
     daftarMenu.splice(index, 1);
     renderTabel();
 }
@@ -627,33 +518,24 @@ function hapusItem(index){
 // ============================
 // VALIDASI HELPER
 // ============================
-function showError(field){
-    $('#' + field).addClass('is-invalid');
-    $('#err-' + field).show();
-}
-
-function clearError(field){
-    $('#' + field).removeClass('is-invalid');
-    $('#err-' + field).hide();
-}
-
-$('#nama').on('input', function(){ clearError('nama'); });
+function showError(field)  { $('#' + field).addClass('is-invalid'); $('#err-' + field).show(); }
+function clearError(field) { $('#' + field).removeClass('is-invalid'); $('#err-' + field).hide(); }
+$('#nama').on('input', function () { clearError('nama'); });
 
 // ============================
 // SIMPAN + MIDTRANS
 // ============================
-function simpanPesanan(){
+function simpanPesanan() {
     let valid = true;
-    if($('#nama').val().trim() === ''){ showError('nama'); valid = false; }
-    if(!$('#vendor').val()){ showError('vendor'); valid = false; }
-    if(!valid) return;
+    if ($('#nama').val().trim() === '') { showError('nama');   valid = false; }
+    if (!$('#vendor').val())            { showError('vendor'); valid = false; }
+    if (!valid) return;
 
-    if(daftarMenu.length === 0){
+    if (daftarMenu.length === 0) {
         showToast('Belum ada menu dipilih!', 'warning');
         return;
     }
 
-    // Disable tombol saat loading
     $('#btn-pesan').prop('disabled', true).text('⏳ Memproses...');
     showToast('Menyimpan pesanan...', 'info', 2000);
 
@@ -667,22 +549,23 @@ function simpanPesanan(){
             total: total,
             menu: daftarMenu
         }),
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function(res){
-            if(res.status !== 'success'){
+        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+        success: function (res) {
+            if (res.status !== 'success') {
                 showToast('Gagal menyimpan pesanan', 'error');
                 $('#btn-pesan').prop('disabled', false).html('🛒 Pesan & Bayar');
                 return;
             }
+
+            // ✅ BARU: simpan idpesanan ke variable global
+            idpesananGlobal = res.idpesanan;
 
             showToast('Pesanan tersimpan! Membuka pembayaran...', 'success', 2000);
 
             fetch('/pesanan/checkout/' + res.idpesanan)
                 .then(r => r.json())
                 .then(data => {
-                    if(!data.snap_token){
+                    if (!data.snap_token) {
                         showToast('Gagal mendapatkan token pembayaran', 'error');
                         $('#btn-pesan').prop('disabled', false).html('🛒 Pesan & Bayar');
                         return;
@@ -691,28 +574,25 @@ function simpanPesanan(){
                     $('#btn-pesan').prop('disabled', false).html('🛒 Pesan & Bayar');
 
                     snap.pay(data.snap_token, {
-                        onSuccess: function(){
-                            showToast('Pembayaran berhasil! 🎉', 'success', 3000);
-                            setTimeout(() => location.reload(), 2000);
+                        // ✅ DIUBAH: redirect ke halaman success + QR Code
+                        onSuccess: function (result) {
+                        console.log('onSuccess triggered:', result);
+                        window.location.href = '/payment/success/' + idpesananGlobal;
                         },
-                        onPending: function(){
+                        onPending: function () {
                             showToast('Menunggu pembayaran...', 'warning', 3000);
                             setTimeout(() => location.reload(), 2000);
                         },
-                        onError: function(){
-                            showToast('Pembayaran gagal, silakan coba lagi', 'error');
-                        },
-                        onClose: function(){
-                            showToast('Pembayaran dibatalkan', 'warning', 2000);
-                        }
+                        onError:   function () { showToast('Pembayaran gagal, silakan coba lagi', 'error'); },
+                        onClose:   function () { showToast('Pembayaran dibatalkan', 'warning', 2000); }
                     });
                 })
-                .catch(function(){
+                .catch(function () {
                     showToast('Terjadi kesalahan saat checkout', 'error');
                     $('#btn-pesan').prop('disabled', false).html('🛒 Pesan & Bayar');
                 });
         },
-        error: function(xhr){
+        error: function (xhr) {
             let msg = xhr.responseJSON ? xhr.responseJSON.message : 'Terjadi kesalahan';
             showToast('Error: ' + msg, 'error');
             $('#btn-pesan').prop('disabled', false).html('🛒 Pesan & Bayar');

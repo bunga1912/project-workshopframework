@@ -6,11 +6,36 @@ use Illuminate\Http\Request;
 use App\Models\Menu;
 use App\Models\Vendor;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Picqer\Barcode\BarcodeGeneratorPNG;
 
 class MenuController extends Controller
 {
     // ============================
-    // LIST MENU (MILIK VENDOR LOGIN)
+    // HELPER — generate barcode (AMAN)
+    // ============================
+    private function generateBarcode($value): ?string
+    {
+        try {
+            $generator = new BarcodeGeneratorPNG();
+
+            return base64_encode(
+                $generator->getBarcode(
+                    (string) $value,
+                    $generator::TYPE_CODE_128,
+                    2,
+                    80 // 🔥 lebih tinggi biar jelas
+                )
+            );
+
+        } catch (\Exception $e) {
+            // ❗ kalau GD / Imagick tidak ada → tidak error
+            return null;
+        }
+    }
+
+    // ============================
+    // LIST MENU (VENDOR LOGIN)
     // ============================
     public function index()
     {
@@ -21,6 +46,10 @@ class MenuController extends Controller
         }
 
         $menu = Menu::where('idvendor', $vendor->idvendor)->get();
+
+        $menu->each(function ($m) {
+            $m->barcodeBase64 = $this->generateBarcode($m->idmenu);
+        });
 
         return view('menu.index', compact('menu'));
     }
@@ -34,7 +63,7 @@ class MenuController extends Controller
     }
 
     // ============================
-    // SIMPAN MENU + FOTO
+    // SIMPAN MENU
     // ============================
     public function store(Request $request)
     {
@@ -69,7 +98,7 @@ class MenuController extends Controller
     }
 
     // ============================
-    // FORM EDIT MENU
+    // FORM EDIT
     // ============================
     public function edit($id)
     {
@@ -85,7 +114,7 @@ class MenuController extends Controller
     }
 
     // ============================
-    // UPDATE MENU + FOTO
+    // UPDATE MENU
     // ============================
     public function update(Request $request, $id)
     {
@@ -96,7 +125,6 @@ class MenuController extends Controller
         ]);
 
         $menu = Menu::findOrFail($id);
-
         $vendor = Vendor::where('user_id', auth()->id())->first();
 
         if ($menu->idvendor != $vendor->idvendor) {
@@ -109,8 +137,7 @@ class MenuController extends Controller
         $menu->harga     = $harga;
 
         if ($request->hasFile('path_gambar')) {
-            $path = $request->file('path_gambar')->store('menu', 'public');
-            $menu->path_gambar = $path;
+            $menu->path_gambar = $request->file('path_gambar')->store('menu', 'public');
         }
 
         $menu->save();
@@ -120,12 +147,11 @@ class MenuController extends Controller
     }
 
     // ============================
-    // HAPUS MENU
+    // DELETE MENU
     // ============================
     public function destroy($id)
     {
         $menu = Menu::findOrFail($id);
-
         $vendor = Vendor::where('user_id', auth()->id())->first();
 
         if ($menu->idvendor != $vendor->idvendor) {
@@ -138,46 +164,58 @@ class MenuController extends Controller
             ->with('success', 'Menu berhasil dihapus');
     }
 
-    // ============================
-    // NONAKTIFKAN SHOW
-    // ============================
     public function show($id)
     {
         return redirect()->route('menu.index');
     }
 
     // ============================
-    // PESANAN MASUK (VENDOR)
+    // PESANAN MASUK
     // ============================
     public function pesananMasuk()
     {
         $vendor = Vendor::where('user_id', auth()->id())->first();
 
         if (!$vendor) {
-            abort(403, 'Vendor tidak ditemukan');
+            abort(403);
         }
 
         $pesanan = DB::table('pesanan')
             ->join('detail_pesanan', 'pesanan.idpesanan', '=', 'detail_pesanan.idpesanan')
             ->join('menu', 'detail_pesanan.idmenu', '=', 'menu.idmenu')
             ->where('menu.idvendor', $vendor->idvendor)
-            ->select(
-                'pesanan.idpesanan',
-                'pesanan.nama',
-                'pesanan.timestamp',
-                'pesanan.total',
-                'pesanan.metode_bayar',
-                'pesanan.status_bayar',
-                'menu.nama_menu',
-                'detail_pesanan.jumlah',
-                'detail_pesanan.harga',
-                'detail_pesanan.subtotal',
-                'detail_pesanan.catatan'
-            )
-            ->orderBy('pesanan.timestamp', 'desc')
             ->get()
             ->groupBy('idpesanan');
 
         return view('menu.pesanan-masuk', compact('pesanan'));
+    }
+
+    // ============================
+    // CETAK PDF
+    // ============================
+    public function cetakTagHarga($id)
+    {
+        $menu = Menu::findOrFail($id);
+
+        $barcodeBase64 = $this->generateBarcode($menu->idmenu);
+
+        $pdf = Pdf::loadView('menu.tag-harga', compact('menu', 'barcodeBase64'));
+
+        return $pdf->stream();
+    }
+
+    public function cetakSemuaTagHarga()
+    {
+        $vendor = Vendor::where('user_id', auth()->id())->first();
+
+        $menu = Menu::where('idvendor', $vendor->idvendor)->get();
+
+        $menu->each(function ($m) {
+            $m->barcodeBase64 = $this->generateBarcode($m->idmenu);
+        });
+
+        $pdf = Pdf::loadView('menu.tag-harga-semua', compact('menu'));
+
+        return $pdf->stream();
     }
 }
