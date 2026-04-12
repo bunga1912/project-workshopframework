@@ -25,19 +25,28 @@
             </div>
 
             <div class="form-group">
-                <label>Akun User (role: vendor)</label>
-                <select name="user_id" class="form-control @error('user_id') is-invalid @enderror">
-                    <option value="">-- Pilih User --</option>
-                    @foreach($users as $user)
-                        <option value="{{ $user->id }}"
-                            {{ old('user_id', $vendor->user_id) == $user->id ? 'selected' : '' }}>
-                            {{ $user->name }} ({{ $user->email }})
-                        </option>
-                    @endforeach
-                </select>
-                @error('user_id')
+                <label>Nama User</label>
+                <input type="text" name="nama_user"
+                       class="form-control @error('nama_user') is-invalid @enderror"
+                       value="{{ old('nama_user', $vendor->user->name ?? '') }}">
+                @error('nama_user')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email"
+                       class="form-control @error('email') is-invalid @enderror"
+                       value="{{ old('email', $vendor->user->email ?? '') }}">
+                @error('email')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="form-group">
+                <label>Password Baru <small>(kosongkan jika tidak diubah)</small></label>
+                <input type="password" name="password" class="form-control">
             </div>
 
             <button type="submit" class="btn btn-primary">
