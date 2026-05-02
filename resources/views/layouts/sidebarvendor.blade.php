@@ -21,11 +21,20 @@
                 <i class="mdi mdi-food menu-icon"></i>
             </a>
         </li>
+
         {{-- PESANAN MASUK --}}
         <li class="nav-item {{ request()->routeIs('pesanan.masuk') ? 'active' : '' }}">
             <a class="nav-link" href="{{ route('pesanan.masuk') }}">
                 <span class="menu-title">Pesanan Masuk</span>
                 <i class="mdi mdi-clipboard-list menu-icon"></i>
+            </a>
+        </li>
+
+        {{-- SCAN QR CODE CUSTOMER --}}
+        <li class="nav-item {{ request()->routeIs('vendor.scan') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('vendor.scan') }}">
+                <span class="menu-title">Scan QR Customer</span>
+                <i class="mdi mdi-qrcode-scan menu-icon"></i>
             </a>
         </li>
 

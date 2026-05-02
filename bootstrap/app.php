@@ -14,6 +14,11 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
 
+        $middleware->validateCsrfTokens(except: [
+        'payment/notification',
+        'midtrans-callback',
+        ]);
+
         $middleware->alias([
             'admin' => AdminMiddleware::class,
             'isVendor' => IsVendor::class, // 🔥 TAMBAHAN

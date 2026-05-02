@@ -3,87 +3,77 @@
 @section('content')
 <div class="row justify-content-center">
     <div class="col-md-6">
-
-        {{-- Header --}}
-        <div class="text-center mb-4">
-            <div style="font-size: 60px;">✅</div>
-            <h2 class="fw-bold text-success mt-2">Pembayaran Berhasil!</h2>
-            <p class="text-muted">Terima kasih, pesanan Anda sedang diproses.</p>
-        </div>
-
-        {{-- Card Info Pesanan --}}
-        <div class="card mb-4" style="border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
-            <div class="card-body p-4">
-
-                <h5 class="fw-bold mb-3">Detail Pesanan</h5>
-
-                <div class="d-flex justify-content-between border-bottom py-2">
-                    <span class="text-muted">ID Pesanan</span>
-                    <span class="fw-bold">#{{ $pesanan->idpesanan }}</span>
-                </div>
-
-                <div class="d-flex justify-content-between border-bottom py-2">
-                    <span class="text-muted">Nama</span>
-                    <span class="fw-bold">{{ $pesanan->nama }}</span>
-                </div>
-
-                <div class="d-flex justify-content-between border-bottom py-2">
-                    <span class="text-muted">Total Bayar</span>
-                    <span class="fw-bold text-success">
-                        Rp {{ number_format($pesanan->total, 0, ',', '.') }}
-                    </span>
-                </div>
-
-                <div class="d-flex justify-content-between border-bottom py-2">
-                    <span class="text-muted">Metode Bayar</span>
-                    <span class="fw-bold text-uppercase">{{ $pesanan->metode_bayar }}</span>
-                </div>
-
-                <div class="d-flex justify-content-between border-bottom py-2">
-                    <span class="text-muted">Status</span>
-                    <span class="badge bg-success px-3 py-2">LUNAS</span>
-                </div>
-
-                <div class="d-flex justify-content-between py-2">
-                    <span class="text-muted">Waktu</span>
-                    <span>{{ \Carbon\Carbon::parse($pesanan->timestamp)->format('d M Y, H:i') }}</span>
-                </div>
-
+        <div class="card shadow">
+            <div class="card-header bg-success text-white text-center">
+                <h4 class="mb-0">
+                    <i class="mdi mdi-check-circle"></i> Pembayaran Berhasil!
+                </h4>
             </div>
-        </div>
+            <div class="card-body text-center">
 
-        {{-- QR Code --}}
-        <div class="card mb-4" style="border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
-            <div class="card-body p-4 text-center">
-
-                <h5 class="fw-bold mb-1">QR Code Pesanan</h5>
+                <p class="text-muted mb-1">Tunjukkan QR Code ini ke vendor</p>
                 <p class="text-muted small mb-3">
-                    Tunjukkan QR Code ini kepada vendor sebagai bukti pembayaran.
+                    ID Pesanan: <strong>#{{ $pesanan->idpesanan }}</strong>
                 </p>
 
-                <div style="background:#fff; border: 2px dashed #198754; border-radius: 12px; padding: 20px; display: inline-block;">
-                    <img src="{{ $qrDataUri }}" 
-                         alt="QR Code #{{ $pesanan->idpesanan }}" 
-                         style="width: 200px; height: 200px;">
+                {{-- QR Code dari server (base64) --}}
+                <div class="d-flex justify-content-center mb-3">
+                    <div style="padding:16px; background:#fff; display:inline-block;
+                                border-radius:8px; border:2px solid #28a745;">
+                        <img src="{{ $qrDataUri }}"
+                             alt="QR Code Pesanan #{{ $pesanan->idpesanan }}"
+                             style="width:220px; height:220px;">
+                    </div>
                 </div>
 
-                <p class="mt-3 text-muted small">
-                    ID: <strong>#{{ $pesanan->idpesanan }}</strong>
+                {{-- Info pesanan --}}
+                <div class="card bg-light mt-3 text-left">
+                    <div class="card-body py-2 px-3">
+                        <div class="mb-2">
+                            <small class="text-muted d-block">Nama Pemesan</small>
+                            <span class="font-weight-bold">{{ $pesanan->nama }}</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted d-block">Total Bayar</small>
+                            <span class="font-weight-bold">
+                                Rp {{ number_format($pesanan->total, 0, ',', '.') }}
+                            </span>
+                        </div>
+                        <div class="mb-0">
+                            <small class="text-muted d-block">Metode Bayar</small>
+                            <span class="font-weight-bold">
+                                {{ $pesanan->metode_bayar == 1 ? 'Cash' : 'Transfer / Online' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-muted small mt-3 mb-0">
+                    <i class="mdi mdi-information-outline"></i>
+                    Screenshot atau print halaman ini untuk menyimpan QR Code kamu.
                 </p>
 
             </div>
+            <div class="card-footer text-center">
+                <a href="{{ route('pesanan.index') }}" class="btn btn-outline-secondary btn-sm">
+                    <i class="mdi mdi-arrow-left"></i> Pesan Lagi
+                </a>
+                <button class="btn btn-outline-success btn-sm ml-2" onclick="window.print()">
+                    <i class="mdi mdi-printer"></i> Print QR
+                </button>
+            </div>
         </div>
-
-        {{-- Tombol --}}
-        <div class="d-grid gap-2">
-            <a href="{{ route('home') }}" class="btn btn-success btn-lg">
-                🏠 Kembali ke Halaman Utama
-            </a>
-            <button onclick="window.print()" class="btn btn-outline-secondary">
-                🖨️ Print / Simpan sebagai PDF
-            </button>
-        </div>
-
     </div>
 </div>
 @endsection
+
+@push('styles')
+<style>
+    @media print {
+        .navbar, .sidebar, .footer,
+        .card-footer, .btn, .nav { display: none !important; }
+        .card { border: none !important; box-shadow: none !important; }
+        .main-panel { margin: 0 !important; }
+    }
+</style>
+@endpush

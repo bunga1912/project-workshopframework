@@ -14,6 +14,7 @@ use App\Http\Controllers\PesananController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\BarcodeController;
 
 Auth::routes(['register' => false]);
 
@@ -41,13 +42,9 @@ Route::get('/', [PesananController::class, 'index'])->name('home');
 // CUSTOMER PUBLIC (PESANAN)
 // ============================================
 Route::prefix('pesanan')->group(function () {
-
     Route::get('/', [PesananController::class, 'index'])->name('pesanan.index');
-
     Route::get('/get-menu/{id}', [PesananController::class, 'getMenu'])->name('pesanan.getMenu');
-
     Route::post('/simpan', [PesananController::class, 'simpanPesanan'])->name('pesanan.simpan');
-
     Route::get('/checkout/{id}', [PesananController::class, 'checkout'])->name('pesanan.checkout');
 });
 
@@ -63,7 +60,22 @@ Route::get('/payment/success/{id}', [PesananController::class, 'successPage'])
     ->name('payment.success');
 
 // ============================================
-// 🔥 FIX: ROUTE FOTO HARUS PUBLIC
+// TESTING ONLY: Update status bayar manual
+// (Hapus route ini sebelum production / dikumpulkan)
+// ============================================
+Route::get('/dev/bayar/{idpesanan}', function ($idpesanan) {
+    $pesanan = \App\Models\Pesanan::findOrFail($idpesanan);
+    $pesanan->status_bayar = 1;
+    $pesanan->save();
+    return response()->json([
+        'message'    => "Pesanan #{$idpesanan} berhasil diupdate jadi Lunas ✅",
+        'idpesanan'  => $pesanan->idpesanan,
+        'status_bayar' => $pesanan->status_bayar,
+    ]);
+});
+
+// ============================================
+// FIX: ROUTE FOTO HARUS PUBLIC
 // ============================================
 Route::get('/customer/foto/{id}', [CustomerController::class, 'foto'])
     ->name('customer.foto');
@@ -110,6 +122,13 @@ Route::middleware(['auth', 'isVendor'])->group(function () {
 
     Route::get('/menu/tag-harga/semua', [MenuController::class, 'cetakSemuaTagHarga'])
         ->name('menu.tag-harga.semua');
+
+    // PRAKTIKUM 2: Scan QR Code customer
+    Route::get('/vendor/scan', [VendorController::class, 'scanQR'])
+        ->name('vendor.scan');
+
+    Route::get('/vendor/pesanan/{idpesanan}', [VendorController::class, 'getPesanan'])
+        ->name('vendor.getPesanan');
 });
 
 // ============================================
@@ -127,11 +146,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::resource('kategori', KategoriController::class)->except(['index', 'show']);
     Route::resource('buku', BukuController::class)->except(['index', 'show']);
 
-    Route::get('/barang/create', [BarangController::class, 'create']);
-    Route::post('/barang', [BarangController::class, 'store']);
-    Route::get('/barang/{id}/edit', [BarangController::class, 'edit']);
-    Route::put('/barang/{id}', [BarangController::class, 'update']);
-    Route::delete('/barang/{id}', [BarangController::class, 'destroy']);
+    Route::get('/barang/create', [BarangController::class, 'create'])->name('barang.create');
+    Route::post('/barang', [BarangController::class, 'store'])->name('barang.store');
+    Route::get('/barang/{id}/edit', [BarangController::class, 'edit'])->name('barang.edit');
+    Route::put('/barang/{id}', [BarangController::class, 'update'])->name('barang.update');
+    Route::delete('/barang/{id}', [BarangController::class, 'destroy'])->name('barang.destroy');
 
     Route::resource('vendor', VendorController::class);
 
@@ -141,6 +160,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/customer/tambah1', [CustomerController::class, 'store1'])->name('customer.store1');
     Route::get('/customer/tambah2', [CustomerController::class, 'create2'])->name('customer.create2');
     Route::post('/customer/tambah2', [CustomerController::class, 'store2'])->name('customer.store2');
+
+    // PRAKTIKUM 1: Scan Barcode Barang (khusus admin)
+    Route::get('/barcode/scan', [BarcodeController::class, 'index'])->name('barcode.scan');
+    Route::get('/barcode/cari', [BarcodeController::class, 'cari'])->name('barcode.cari');
 });
 
 // ============================================

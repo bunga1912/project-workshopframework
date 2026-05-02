@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Vendor;
 use App\Models\User;
+use App\Models\Pesanan;
+use App\Models\Menu;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class VendorController extends Controller
 {
@@ -33,7 +36,6 @@ class VendorController extends Controller
             'password'    => 'required|min:6',
         ]);
 
-        // Buat user baru dengan role vendor
         $user = User::create([
             'name'     => $request->nama_user,
             'email'    => $request->email,
@@ -41,7 +43,6 @@ class VendorController extends Controller
             'role'     => 'vendor'
         ]);
 
-        // Buat vendor dan hubungkan ke user
         Vendor::create([
             'nama_vendor' => $request->nama_vendor,
             'user_id'     => $user->id,
@@ -67,20 +68,17 @@ class VendorController extends Controller
             'email'       => 'required|email|unique:users,email,' . $vendor->user_id,
         ]);
 
-        // Update user
         $vendor->user->update([
             'name'  => $request->nama_user,
             'email' => $request->email,
         ]);
 
-        // Update password kalau diisi
         if ($request->filled('password')) {
             $vendor->user->update([
                 'password' => bcrypt($request->password)
             ]);
         }
 
-        // Update vendor
         $vendor->update([
             'nama_vendor' => $request->nama_vendor,
         ]);
@@ -93,7 +91,6 @@ class VendorController extends Controller
     {
         $vendor = Vendor::with('user')->findOrFail($id);
 
-        // Hapus user sekalian
         if ($vendor->user) {
             $vendor->user->delete();
         }
@@ -103,4 +100,43 @@ class VendorController extends Controller
         return redirect()->route('vendor.index')
                          ->with('success', 'Vendor berhasil dihapus!');
     }
+
+    // -------------------------------------------------------
+    // PRAKTIKUM 2: Halaman scan QR Code (untuk vendor login)
+    // -------------------------------------------------------
+
+    public function scanQR()
+    {
+        return view('vendor.scan');
+    }
+
+    public function getPesanan($idpesanan)
+{
+    $pesanan = Pesanan::find($idpesanan);
+
+    if (!$pesanan) {
+        return response()->json(['success' => false, 'message' => 'Pesanan tidak ditemukan'], 404);
+    }
+
+    // Ambil menu yang dipesan lewat detail_pesanan, filter by vendor yang login
+    $idVendor = auth()->user()->vendor->idvendor ?? null;
+
+    $menu = DB::table('detail_pesanan')
+        ->join('menu', 'detail_pesanan.idmenu', '=', 'menu.idmenu')
+        ->where('detail_pesanan.idpesanan', $idpesanan)
+        ->where('menu.idvendor', $idVendor)
+        ->select('menu.nama_menu', 'menu.harga', 'detail_pesanan.jumlah', 'detail_pesanan.subtotal')
+        ->get();
+
+    return response()->json([
+        'success' => true,
+        'pesanan' => [
+            'idpesanan'    => $pesanan->idpesanan,
+            'nama'         => $pesanan->nama,
+            'total'        => $pesanan->total,
+            'status_bayar' => $pesanan->status_bayar,
+        ],
+        'menu' => $menu
+    ]);
+}
 }

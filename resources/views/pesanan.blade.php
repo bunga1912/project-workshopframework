@@ -208,6 +208,44 @@
 
     .empty-cart { text-align: center; color: #a0aec0; font-size: 13px; padding: 16px 0; }
 
+    /* Banner QR Terakhir */
+    .banner-qr {
+        display: none;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+        border-radius: 10px;
+        padding: 12px 18px;
+        margin-bottom: 16px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        box-shadow: 0 2px 8px rgba(102,126,234,0.3);
+    }
+    .banner-qr-text { font-size: 13px; font-weight: 500; }
+    .banner-qr-text strong { display: block; font-size: 14px; margin-bottom: 2px; }
+    .btn-lihat-qr {
+        background: #fff;
+        color: #667eea;
+        border: none;
+        border-radius: 6px;
+        padding: 7px 14px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        white-space: nowrap;
+        text-decoration: none;
+    }
+    .btn-hapus-qr {
+        background: none;
+        border: none;
+        color: rgba(255,255,255,0.7);
+        font-size: 18px;
+        cursor: pointer;
+        line-height: 1;
+        padding: 0;
+    }
+    .btn-hapus-qr:hover { color: #fff; }
+
     .toast-container {
         position: fixed; top: 20px; right: 20px;
         z-index: 9999; display: flex; flex-direction: column; gap: 10px;
@@ -249,6 +287,16 @@
         <div class="katalog-header">
             <h3>🍽️ Kantin</h3>
             <p>Pilih vendor dan tambahkan menu ke pesanan kamu</p>
+        </div>
+
+        {{-- Banner QR Pesanan Terakhir --}}
+        <div class="banner-qr" id="banner-qr">
+            <div class="banner-qr-text">
+                <strong>📱 Punya pesanan aktif?</strong>
+                <span id="banner-qr-label">Lihat QR Code pesanan terakhir kamu</span>
+            </div>
+            <a href="#" id="btn-lihat-qr" class="btn-lihat-qr" target="_blank">Lihat QR</a>
+            <button class="btn-hapus-qr" onclick="hapusRiwayatQR()" title="Tutup">×</button>
         </div>
 
         <div class="vendor-tabs">
@@ -336,10 +384,31 @@
     data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}"></script>
 
 <script>
-let daftarMenu    = [];
-let total         = 0;
+let daftarMenu     = [];
+let total          = 0;
 let activeVendorId = null;
-let idpesananGlobal = null; // ✅ BARU: simpan idpesanan untuk redirect setelah bayar
+let idpesananGlobal = null;
+
+// ============================
+// CEK RIWAYAT QR DI LOCALSTORAGE
+// ============================
+function cekRiwayatQR() {
+    const qrUrl = localStorage.getItem('qr_pesanan_url');
+    const qrId  = localStorage.getItem('qr_pesanan_id');
+
+    if (qrUrl && qrId) {
+        document.getElementById('banner-qr').style.display = 'flex';
+        document.getElementById('btn-lihat-qr').href = qrUrl;
+        document.getElementById('banner-qr-label').textContent =
+            'Pesanan #' + qrId + ' — Tap untuk lihat QR Code';
+    }
+}
+
+function hapusRiwayatQR() {
+    localStorage.removeItem('qr_pesanan_url');
+    localStorage.removeItem('qr_pesanan_id');
+    document.getElementById('banner-qr').style.display = 'none';
+}
 
 // ============================
 // TOAST
@@ -363,6 +432,9 @@ function showToast(message, type = 'info', duration = 3000) {
 // LOAD VENDOR PERTAMA OTOMATIS
 // ============================
 $(document).ready(function () {
+    // Cek riwayat QR saat halaman dibuka
+    cekRiwayatQR();
+
     let firstId = {{ $vendors->first() ? $vendors->first()->idvendor : 'null' }};
     if (firstId) loadMenuGrid(firstId);
 
@@ -557,9 +629,7 @@ function simpanPesanan() {
                 return;
             }
 
-            // ✅ BARU: simpan idpesanan ke variable global
             idpesananGlobal = res.idpesanan;
-
             showToast('Pesanan tersimpan! Membuka pembayaran...', 'success', 2000);
 
             fetch('/pesanan/checkout/' + res.idpesanan)
@@ -574,10 +644,13 @@ function simpanPesanan() {
                     $('#btn-pesan').prop('disabled', false).html('🛒 Pesan & Bayar');
 
                     snap.pay(data.snap_token, {
-                        // ✅ DIUBAH: redirect ke halaman success + QR Code
                         onSuccess: function (result) {
-                        console.log('onSuccess triggered:', result);
-                        window.location.href = '/payment/success/' + idpesananGlobal;
+                            // Simpan URL QR ke localStorage sebelum redirect
+                            const qrUrl = '/payment/success/' + idpesananGlobal;
+                            localStorage.setItem('qr_pesanan_url', qrUrl);
+                            localStorage.setItem('qr_pesanan_id', idpesananGlobal);
+
+                            window.location.href = qrUrl;
                         },
                         onPending: function () {
                             showToast('Menunggu pembayaran...', 'warning', 3000);

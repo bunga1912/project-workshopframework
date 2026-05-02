@@ -46,6 +46,14 @@
             </a>
         </li>
 
+        {{-- SCAN BARCODE BARANG --}}
+        <li class="nav-item {{ request()->routeIs('barcode.*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('barcode.scan') }}">
+                <span class="menu-title">Scan Barcode</span>
+                <i class="mdi mdi-barcode-scan menu-icon"></i>
+            </a>
+        </li>
+
         {{-- WILAYAH --}}
         <li class="nav-item {{ request()->routeIs('wilayah.*') ? 'active' : '' }}">
             <a class="nav-link" href="{{ route('wilayah.index') }}">
@@ -88,8 +96,8 @@
         {{-- CUSTOMER --}}
         <li class="nav-item {{ request()->routeIs('customer.*') ? 'active' : '' }}">
             <a class="nav-link" href="{{ route('customer.index') }}">
-            <span class="menu-title">Customer</span>
-            <i class="mdi mdi-account-group menu-icon"></i>
+                <span class="menu-title">Customer</span>
+                <i class="mdi mdi-account-group menu-icon"></i>
             </a>
         </li>
 
