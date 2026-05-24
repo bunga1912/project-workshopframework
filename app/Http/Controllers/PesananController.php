@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use App\Models\Vendor;
 use App\Models\Menu;
 use App\Models\Pesanan;
@@ -146,7 +147,6 @@ class PesananController extends Controller
     // =====================================================
     public function handleNotification(Request $request)
     {
-        // Set ulang config di sini agar pasti terbaca
         \Midtrans\Config::$serverKey    = config('midtrans.server_key');
         \Midtrans\Config::$isProduction = false;
         \Midtrans\Config::$isSanitized  = true;
@@ -155,10 +155,9 @@ class PesananController extends Controller
         $notif = new \Midtrans\Notification();
 
         $transactionStatus = $notif->transaction_status;
-        $orderId           = $notif->order_id; // format: ORDER-{idpesanan}-{time}
+        $orderId           = $notif->order_id;
         $fraudStatus       = $notif->fraud_status;
 
-        // Ambil idpesanan dari order_id
         $parts     = explode('-', $orderId);
         $idpesanan = $parts[1] ?? null;
 
@@ -190,18 +189,40 @@ class PesananController extends Controller
     }
 
     // =====================================================
-    // Halaman sukses + tampil QR Code
+    // Halaman sukses + otomatis daftar antrian
     // =====================================================
     public function successPage($id)
     {
         $pesanan = Pesanan::findOrFail($id);
 
+        // Generate QR Code
         $qrCode = new QrCode((string) $pesanan->idpesanan);
         $writer = new PngWriter();
         $result = $writer->write($qrCode);
-
         $qrDataUri = $result->getDataUri();
 
-        return view('payment.success', compact('pesanan', 'qrDataUri'));
+        // Daftarkan ke antrian otomatis setelah bayar
+        $antrian  = Cache::get('antrian_data', []);
+        $sudahAda = collect($antrian)->firstWhere('id_pesanan', $pesanan->idpesanan);
+
+        if (!$sudahAda) {
+            $nomor = count($antrian) > 0
+                ? max(array_column($antrian, 'nomor')) + 1
+                : 1;
+
+            $antrian[] = [
+                'nomor'      => $nomor,
+                'nama'       => $pesanan->nama,
+                'id_pesanan' => $pesanan->idpesanan,
+                'status'     => 'menunggu',
+                'created_at' => now()->format('H:i:s'),
+            ];
+
+            Cache::put('antrian_data', $antrian);
+        } else {
+            $nomor = $sudahAda['nomor'];
+        }
+
+        return view('payment.success', compact('pesanan', 'qrDataUri', 'nomor'));
     }
 }

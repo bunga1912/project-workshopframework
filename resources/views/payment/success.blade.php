@@ -26,6 +26,21 @@
                     </div>
                 </div>
 
+                {{-- Nomor Antrian --}}
+                <div class="card mt-3 mb-3" style="border: 2px dashed #e74c3c; border-radius: 12px;">
+                    <div class="card-body py-3">
+                        <p class="text-muted mb-1" style="font-size:0.8rem; letter-spacing:3px; text-transform:uppercase;">
+                            Nomor Antrian Kamu
+                        </p>
+                        <div style="font-size:5rem; font-weight:800; color:#e74c3c; line-height:1;">
+                            {{ $nomor }}
+                        </div>
+                        <p class="text-muted small mt-2 mb-0">
+                            Tunggu hingga nomormu dipanggil di papan antrian
+                        </p>
+                    </div>
+                </div>
+
                 {{-- Info pesanan --}}
                 <div class="card bg-light mt-3 text-left">
                     <div class="card-body py-2 px-3">
@@ -50,7 +65,7 @@
 
                 <p class="text-muted small mt-3 mb-0">
                     <i class="mdi mdi-information-outline"></i>
-                    Screenshot atau print halaman ini untuk menyimpan QR Code kamu.
+                    Screenshot atau print halaman ini untuk menyimpan QR Code dan nomor antrian kamu.
                 </p>
 
             </div>
@@ -59,7 +74,7 @@
                     <i class="mdi mdi-arrow-left"></i> Pesan Lagi
                 </a>
                 <button class="btn btn-outline-success btn-sm ml-2" onclick="window.print()">
-                    <i class="mdi mdi-printer"></i> Print QR
+                    <i class="mdi mdi-printer"></i> Print
                 </button>
             </div>
         </div>

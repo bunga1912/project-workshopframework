@@ -246,6 +246,53 @@
     }
     .btn-hapus-qr:hover { color: #fff; }
 
+    /* Papan antrian mini */
+    .papan-mini {
+        background: #1a1a2e;
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+    .papan-mini-label {
+        font-size: 0.7rem;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: #aaa;
+        margin-bottom: 4px;
+    }
+    .papan-mini-nomor {
+        font-size: 2.8rem;
+        font-weight: 800;
+        color: #e74c3c;
+        line-height: 1;
+    }
+    .papan-mini-nama {
+        font-size: 0.95rem;
+        color: #ecf0f1;
+        margin-top: 4px;
+    }
+    .papan-mini-status {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.75rem;
+        color: #aaa;
+    }
+    .papan-mini-dot {
+        width: 7px; height: 7px;
+        border-radius: 50%;
+        background: #2ecc71;
+        animation: blink 1.5s infinite;
+    }
+    @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50%       { opacity: 0.2; }
+    }
+
     .toast-container {
         position: fixed; top: 20px; right: 20px;
         z-index: 9999; display: flex; flex-direction: column; gap: 10px;
@@ -297,6 +344,19 @@
             </div>
             <a href="#" id="btn-lihat-qr" class="btn-lihat-qr" target="_blank">Lihat QR</a>
             <button class="btn-hapus-qr" onclick="hapusRiwayatQR()" title="Tutup">×</button>
+        </div>
+
+        {{-- Papan antrian mini --}}
+        <div class="papan-mini" id="papan-mini">
+            <div>
+                <div class="papan-mini-label">Sedang Dipanggil</div>
+                <div class="papan-mini-nomor" id="papan-nomor">—</div>
+                <div class="papan-mini-nama" id="papan-nama">Menunggu panggilan...</div>
+            </div>
+            <div class="papan-mini-status">
+                <span class="papan-mini-dot" id="papan-dot"></span>
+                <span id="papan-status-text">Live</span>
+            </div>
         </div>
 
         <div class="vendor-tabs">
@@ -384,9 +444,9 @@
     data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}"></script>
 
 <script>
-let daftarMenu     = [];
-let total          = 0;
-let activeVendorId = null;
+let daftarMenu      = [];
+let total           = 0;
+let activeVendorId  = null;
 let idpesananGlobal = null;
 
 // ============================
@@ -395,7 +455,6 @@ let idpesananGlobal = null;
 function cekRiwayatQR() {
     const qrUrl = localStorage.getItem('qr_pesanan_url');
     const qrId  = localStorage.getItem('qr_pesanan_id');
-
     if (qrUrl && qrId) {
         document.getElementById('banner-qr').style.display = 'flex';
         document.getElementById('btn-lihat-qr').href = qrUrl;
@@ -432,8 +491,8 @@ function showToast(message, type = 'info', duration = 3000) {
 // LOAD VENDOR PERTAMA OTOMATIS
 // ============================
 $(document).ready(function () {
-    // Cek riwayat QR saat halaman dibuka
     cekRiwayatQR();
+    conectSSEPapan();
 
     let firstId = {{ $vendors->first() ? $vendors->first()->idvendor : 'null' }};
     if (firstId) loadMenuGrid(firstId);
@@ -447,6 +506,38 @@ $(document).ready(function () {
         clearError('vendor');
     });
 });
+
+// ============================
+// SSE PAPAN ANTRIAN MINI
+// ============================
+function conectSSEPapan() {
+    const source = new EventSource('{{ route("sse.antrian") }}');
+
+    source.addEventListener('queue-update', function (e) {
+        const data = JSON.parse(e.data);
+
+        const elNomor  = document.getElementById('papan-nomor');
+        const elNama   = document.getElementById('papan-nama');
+        const elDot    = document.getElementById('papan-dot');
+        const elStatus = document.getElementById('papan-status-text');
+
+        if (data.dipanggil) {
+            elNomor.textContent = data.dipanggil.nomor;
+            elNama.textContent  = data.dipanggil.nama;
+        } else {
+            elNomor.textContent = '—';
+            elNama.textContent  = 'Menunggu panggilan...';
+        }
+
+        elDot.style.background    = '#2ecc71';
+        elStatus.textContent      = 'Live';
+    });
+
+    source.onerror = function () {
+        document.getElementById('papan-dot').style.background  = '#e74c3c';
+        document.getElementById('papan-status-text').textContent = 'Offline';
+    };
+}
 
 // ============================
 // KLIK TAB VENDOR
@@ -645,11 +736,9 @@ function simpanPesanan() {
 
                     snap.pay(data.snap_token, {
                         onSuccess: function (result) {
-                            // Simpan URL QR ke localStorage sebelum redirect
                             const qrUrl = '/payment/success/' + idpesananGlobal;
                             localStorage.setItem('qr_pesanan_url', qrUrl);
                             localStorage.setItem('qr_pesanan_id', idpesananGlobal);
-
                             window.location.href = qrUrl;
                         },
                         onPending: function () {

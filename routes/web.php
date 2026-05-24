@@ -15,6 +15,7 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\BarcodeController;
+use App\Http\Controllers\AntrianController;
 
 Auth::routes(['register' => false]);
 
@@ -61,15 +62,15 @@ Route::get('/payment/success/{id}', [PesananController::class, 'successPage'])
 
 // ============================================
 // TESTING ONLY: Update status bayar manual
-// (Hapus route ini sebelum production / dikumpulkan)
+// (Hapus route ini sebelum dikumpulkan)
 // ============================================
 Route::get('/dev/bayar/{idpesanan}', function ($idpesanan) {
     $pesanan = \App\Models\Pesanan::findOrFail($idpesanan);
     $pesanan->status_bayar = 1;
     $pesanan->save();
     return response()->json([
-        'message'    => "Pesanan #{$idpesanan} berhasil diupdate jadi Lunas ✅",
-        'idpesanan'  => $pesanan->idpesanan,
+        'message'      => "Pesanan #{$idpesanan} berhasil diupdate jadi Lunas ✅",
+        'idpesanan'    => $pesanan->idpesanan,
         'status_bayar' => $pesanan->status_bayar,
     ]);
 });
@@ -79,6 +80,11 @@ Route::get('/dev/bayar/{idpesanan}', function ($idpesanan) {
 // ============================================
 Route::get('/customer/foto/{id}', [CustomerController::class, 'foto'])
     ->name('customer.foto');
+
+// ============================================
+// ANTRIAN PUBLIC - customer tidak perlu login
+// ============================================
+Route::get('/sse/antrian', [AntrianController::class, 'stream'])->name('sse.antrian');
 
 // ============================================
 // ADMIN (LOGIN)
@@ -113,22 +119,17 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'isVendor'])->group(function () {
 
     Route::resource('/menu', MenuController::class);
+    Route::get('/pesanan-masuk', [MenuController::class, 'pesananMasuk'])->name('pesanan.masuk');
+    Route::get('/menu/{id}/tag-harga', [MenuController::class, 'cetakTagHarga'])->name('menu.tag-harga');
+    Route::get('/menu/tag-harga/semua', [MenuController::class, 'cetakSemuaTagHarga'])->name('menu.tag-harga.semua');
+    Route::get('/vendor/scan', [VendorController::class, 'scanQR'])->name('vendor.scan');
+    Route::get('/vendor/pesanan/{idpesanan}', [VendorController::class, 'getPesanan'])->name('vendor.getPesanan');
 
-    Route::get('/pesanan-masuk', [MenuController::class, 'pesananMasuk'])
-        ->name('pesanan.masuk');
-
-    Route::get('/menu/{id}/tag-harga', [MenuController::class, 'cetakTagHarga'])
-        ->name('menu.tag-harga');
-
-    Route::get('/menu/tag-harga/semua', [MenuController::class, 'cetakSemuaTagHarga'])
-        ->name('menu.tag-harga.semua');
-
-    // PRAKTIKUM 2: Scan QR Code customer
-    Route::get('/vendor/scan', [VendorController::class, 'scanQR'])
-        ->name('vendor.scan');
-
-    Route::get('/vendor/pesanan/{idpesanan}', [VendorController::class, 'getPesanan'])
-        ->name('vendor.getPesanan');
+    // ANTRIAN - semua dikelola vendor
+    Route::get('/antrian/papan', [AntrianController::class, 'papan'])->name('antrian.papan');
+    Route::post('/antrian/panggil', [AntrianController::class, 'panggil'])->name('antrian.panggil');
+    Route::post('/antrian/terlambat', [AntrianController::class, 'tandaiTerlambat'])->name('antrian.terlambat');
+    Route::post('/antrian/panggil-terlambat', [AntrianController::class, 'panggilTerlambat'])->name('antrian.panggil-terlambat');
 });
 
 // ============================================
@@ -154,14 +155,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::resource('vendor', VendorController::class);
 
-    // CUSTOMER
     Route::get('/customer', [CustomerController::class, 'index'])->name('customer.index');
     Route::get('/customer/tambah1', [CustomerController::class, 'create1'])->name('customer.create1');
     Route::post('/customer/tambah1', [CustomerController::class, 'store1'])->name('customer.store1');
     Route::get('/customer/tambah2', [CustomerController::class, 'create2'])->name('customer.create2');
     Route::post('/customer/tambah2', [CustomerController::class, 'store2'])->name('customer.store2');
 
-    // PRAKTIKUM 1: Scan Barcode Barang (khusus admin)
     Route::get('/barcode/scan', [BarcodeController::class, 'index'])->name('barcode.scan');
     Route::get('/barcode/cari', [BarcodeController::class, 'cari'])->name('barcode.cari');
 });

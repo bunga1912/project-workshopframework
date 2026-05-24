@@ -38,6 +38,14 @@
             </a>
         </li>
 
+        {{-- PAPAN ANTRIAN --}}
+        <li class="nav-item {{ request()->routeIs('antrian.papan') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('antrian.papan') }}">
+                <span class="menu-title">Papan Antrian</span>
+                <i class="mdi mdi-monitor menu-icon"></i>
+            </a>
+        </li>
+
         {{-- LOGOUT --}}
         <li class="nav-item">
             <form method="POST" action="{{ route('logout') }}">

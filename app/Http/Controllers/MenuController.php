@@ -173,22 +173,28 @@ class MenuController extends Controller
     // PESANAN MASUK
     // ============================
     public function pesananMasuk()
-    {
-        $vendor = Vendor::where('user_id', auth()->id())->first();
+{
+    $vendor = Vendor::where('user_id', auth()->id())->first();
 
-        if (!$vendor) {
-            abort(403);
-        }
-
-        $pesanan = DB::table('pesanan')
-            ->join('detail_pesanan', 'pesanan.idpesanan', '=', 'detail_pesanan.idpesanan')
-            ->join('menu', 'detail_pesanan.idmenu', '=', 'menu.idmenu')
-            ->where('menu.idvendor', $vendor->idvendor)
-            ->get()
-            ->groupBy('idpesanan');
-
-        return view('menu.pesanan-masuk', compact('pesanan'));
+    if (!$vendor) {
+        abort(403);
     }
+
+    $pesanan = DB::table('pesanan')
+        ->join('detail_pesanan', 'pesanan.idpesanan', '=', 'detail_pesanan.idpesanan')
+        ->join('menu', 'detail_pesanan.idmenu', '=', 'menu.idmenu')
+        ->where('menu.idvendor', $vendor->idvendor)
+        ->get()
+        ->groupBy('idpesanan');
+
+    // Ambil data antrian dari cache
+    $antrian        = \Illuminate\Support\Facades\Cache::get('antrian_data', []);
+    $dipanggil      = collect($antrian)->firstWhere('status', 'dipanggil');
+    $menunggu       = array_values(array_filter($antrian, fn($a) => $a['status'] === 'menunggu'));
+    $terlambat      = array_values(array_filter($antrian, fn($a) => $a['status'] === 'terlambat'));
+
+    return view('menu.pesanan-masuk', compact('pesanan', 'antrian', 'dipanggil', 'menunggu', 'terlambat'));
+}
 
     // ============================
     // CETAK PDF
