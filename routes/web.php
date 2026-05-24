@@ -82,7 +82,7 @@ Route::get('/customer/foto/{id}', [CustomerController::class, 'foto'])
     ->name('customer.foto');
 
 // ============================================
-// ANTRIAN PUBLIC - customer tidak perlu login
+// SSE - tanpa session & csrf (exclude di bootstrap/app.php)
 // ============================================
 Route::get('/sse/antrian', [AntrianController::class, 'stream'])->name('sse.antrian');
 

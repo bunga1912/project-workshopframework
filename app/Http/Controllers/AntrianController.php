@@ -7,17 +7,11 @@ use Illuminate\Support\Facades\Cache;
 
 class AntrianController extends Controller
 {
-    // =====================
-    // PAPAN ANTRIAN (vendor)
-    // =====================
     public function papan()
     {
         return view('vendor.papan');
     }
 
-    // =====================
-    // PANGGIL BERIKUTNYA (vendor)
-    // =====================
     public function panggil(Request $request)
     {
         $antrian = Cache::get('antrian_data', []);
@@ -46,9 +40,6 @@ class AntrianController extends Controller
         return back();
     }
 
-    // =====================
-    // TANDAI TIDAK HADIR (vendor)
-    // =====================
     public function tandaiTerlambat(Request $request)
     {
         $request->validate(['nomor' => 'required|integer']);
@@ -67,9 +58,6 @@ class AntrianController extends Controller
         return back();
     }
 
-    // =====================
-    // PANGGIL ULANG TERLAMBAT (vendor)
-    // =====================
     public function panggilTerlambat(Request $request)
     {
         $request->validate(['nomor' => 'required|integer']);
@@ -94,9 +82,6 @@ class AntrianController extends Controller
         return back();
     }
 
-    // =====================
-    // SSE STREAM ENDPOINT
-    // =====================
     public function stream(Request $request)
     {
         return response()->stream(function () {
@@ -104,11 +89,19 @@ class AntrianController extends Controller
             set_time_limit(0);
 
             while (true) {
-                $antrian = Cache::get('antrian_data', []);
-
+                $antrian   = Cache::get('antrian_data', []);
                 $menunggu  = array_values(array_filter($antrian, fn($a) => $a['status'] === 'menunggu'));
                 $terlambat = array_values(array_filter($antrian, fn($a) => $a['status'] === 'terlambat'));
+
+                // Cari yang sedang dipanggil
                 $dipanggil = collect($antrian)->firstWhere('status', 'dipanggil');
+
+                // Kalau tidak ada yang sedang dipanggil, ambil yang terakhir selesai
+                if (!$dipanggil) {
+                    $dipanggil = collect($antrian)
+                        ->filter(fn($a) => $a['status'] === 'selesai')
+                        ->last();
+                }
 
                 $payload = [
                     'menunggu'  => $menunggu,

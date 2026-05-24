@@ -208,7 +208,6 @@
 
     .empty-cart { text-align: center; color: #a0aec0; font-size: 13px; padding: 16px 0; }
 
-    /* Banner QR Terakhir */
     .banner-qr {
         display: none;
         background: linear-gradient(135deg, #667eea, #764ba2);
@@ -246,7 +245,6 @@
     }
     .btn-hapus-qr:hover { color: #fff; }
 
-    /* Papan antrian mini */
     .papan-mini {
         background: #1a1a2e;
         border-radius: 12px;
@@ -439,19 +437,18 @@
 @endsection
 
 @push('scripts')
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://app.sandbox.midtrans.com/snap/snap.js"
     data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}"></script>
 
 <script>
+// BASE URL dari Laravel agar tidak hardcode
+window.BASE_URL = "{{ url('') }}";
+
 let daftarMenu      = [];
 let total           = 0;
 let activeVendorId  = null;
 let idpesananGlobal = null;
 
-// ============================
-// CEK RIWAYAT QR DI LOCALSTORAGE
-// ============================
 function cekRiwayatQR() {
     const qrUrl = localStorage.getItem('qr_pesanan_url');
     const qrId  = localStorage.getItem('qr_pesanan_id');
@@ -469,9 +466,6 @@ function hapusRiwayatQR() {
     document.getElementById('banner-qr').style.display = 'none';
 }
 
-// ============================
-// TOAST
-// ============================
 function showToast(message, type = 'info', duration = 3000) {
     const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
     const toast = $(`
@@ -487,9 +481,6 @@ function showToast(message, type = 'info', duration = 3000) {
     }, duration);
 }
 
-// ============================
-// LOAD VENDOR PERTAMA OTOMATIS
-// ============================
 $(document).ready(function () {
     cekRiwayatQR();
     conectSSEPapan();
@@ -507,9 +498,6 @@ $(document).ready(function () {
     });
 });
 
-// ============================
-// SSE PAPAN ANTRIAN MINI
-// ============================
 function conectSSEPapan() {
     const source = new EventSource('{{ route("sse.antrian") }}');
 
@@ -529,19 +517,16 @@ function conectSSEPapan() {
             elNama.textContent  = 'Menunggu panggilan...';
         }
 
-        elDot.style.background    = '#2ecc71';
-        elStatus.textContent      = 'Live';
+        elDot.style.background = '#2ecc71';
+        elStatus.textContent   = 'Live';
     });
 
     source.onerror = function () {
-        document.getElementById('papan-dot').style.background  = '#e74c3c';
+        document.getElementById('papan-dot').style.background   = '#e74c3c';
         document.getElementById('papan-status-text').textContent = 'Offline';
     };
 }
 
-// ============================
-// KLIK TAB VENDOR
-// ============================
 function pilihVendor(id, el) {
     $('.vendor-tab').removeClass('active');
     $(el).addClass('active');
@@ -551,14 +536,11 @@ function pilihVendor(id, el) {
     loadMenuGrid(id);
 }
 
-// ============================
-// LOAD MENU KE GRID (dengan barcode)
-// ============================
 function loadMenuGrid(id) {
     activeVendorId = id;
     $('#menu-grid').html('<div class="menu-empty">Memuat menu...</div>');
 
-    $.get('/pesanan/get-menu/' + id, function (data) {
+    $.get(BASE_URL + '/pesanan/get-menu/' + id, function (data) {
         if (data.length === 0) {
             $('#menu-grid').html('<div class="menu-empty">Menu tidak tersedia</div>');
             return;
@@ -567,8 +549,8 @@ function loadMenuGrid(id) {
         let html = '';
         data.forEach(m => {
             let gambar = m.path_gambar
-                ? `/storage/${m.path_gambar}`
-                : `/assets/images/no-image.png`;
+                ? BASE_URL + '/storage/' + m.path_gambar
+                : BASE_URL + '/assets/images/no-image.png';
 
             let barcodeHtml = m.barcodeBase64
                 ? `<div class="menu-card-barcode">
@@ -594,14 +576,12 @@ function loadMenuGrid(id) {
         });
 
         $('#menu-grid').html(html);
-    }).fail(function () {
-        $('#menu-grid').html('<div class="menu-empty">Gagal memuat menu</div>');
+    }).fail(function (xhr) {
+        console.error('Gagal load menu:', xhr.status, xhr.responseText);
+        $('#menu-grid').html('<div class="menu-empty">Gagal memuat menu ('+xhr.status+')</div>');
     });
 }
 
-// ============================
-// TAMBAH DARI KARTU MENU
-// ============================
 function tambahDariKartu(idmenu, nama_menu, harga) {
     let valid = true;
     if ($('#nama').val().trim() === '') { showError('nama');   valid = false; }
@@ -622,9 +602,6 @@ function tambahDariKartu(idmenu, nama_menu, harga) {
     renderTabel();
 }
 
-// ============================
-// RENDER TABEL PESANAN
-// ============================
 function renderTabel() {
     total = 0;
     let tbody = '';
@@ -657,9 +634,6 @@ function renderTabel() {
     }
 }
 
-// ============================
-// UBAH QTY
-// ============================
 function ubahQty(index, delta) {
     daftarMenu[index].jumlah += delta;
     if (daftarMenu[index].jumlah <= 0) {
@@ -670,24 +644,15 @@ function ubahQty(index, delta) {
     renderTabel();
 }
 
-// ============================
-// HAPUS ITEM
-// ============================
 function hapusItem(index) {
     daftarMenu.splice(index, 1);
     renderTabel();
 }
 
-// ============================
-// VALIDASI HELPER
-// ============================
 function showError(field)  { $('#' + field).addClass('is-invalid'); $('#err-' + field).show(); }
 function clearError(field) { $('#' + field).removeClass('is-invalid'); $('#err-' + field).hide(); }
 $('#nama').on('input', function () { clearError('nama'); });
 
-// ============================
-// SIMPAN + MIDTRANS
-// ============================
 function simpanPesanan() {
     let valid = true;
     if ($('#nama').val().trim() === '') { showError('nama');   valid = false; }
@@ -703,7 +668,7 @@ function simpanPesanan() {
     showToast('Menyimpan pesanan...', 'info', 2000);
 
     $.ajax({
-        url: '/pesanan/simpan',
+        url: BASE_URL + '/pesanan/simpan',
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify({
@@ -723,7 +688,7 @@ function simpanPesanan() {
             idpesananGlobal = res.idpesanan;
             showToast('Pesanan tersimpan! Membuka pembayaran...', 'success', 2000);
 
-            fetch('/pesanan/checkout/' + res.idpesanan)
+            fetch(BASE_URL + '/pesanan/checkout/' + res.idpesanan)
                 .then(r => r.json())
                 .then(data => {
                     if (!data.snap_token) {
@@ -736,7 +701,7 @@ function simpanPesanan() {
 
                     snap.pay(data.snap_token, {
                         onSuccess: function (result) {
-                            const qrUrl = '/payment/success/' + idpesananGlobal;
+                            const qrUrl = BASE_URL + '/payment/success/' + idpesananGlobal;
                             localStorage.setItem('qr_pesanan_url', qrUrl);
                             localStorage.setItem('qr_pesanan_id', idpesananGlobal);
                             window.location.href = qrUrl;
