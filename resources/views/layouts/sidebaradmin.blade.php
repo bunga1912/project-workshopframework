@@ -101,6 +101,23 @@
             </a>
         </li>
 
+        {{-- ============================================ --}}
+        {{-- NFC ABSENSI (TAMBAHAN) --}}
+        {{-- ============================================ --}}
+        <li class="nav-item {{ request()->routeIs('mahasiswa.*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('mahasiswa.index') }}">
+                <span class="menu-title">Mahasiswa NFC</span>
+                <i class="mdi mdi-card-account-details menu-icon"></i>
+            </a>
+        </li>
+
+        <li class="nav-item {{ request()->routeIs('absensi.*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('absensi.index') }}">
+                <span class="menu-title">Rekap Absensi</span>
+                <i class="mdi mdi-clipboard-check menu-icon"></i>
+            </a>
+        </li>
+
         {{-- LOGOUT --}}
         <li class="nav-item">
             <form method="POST" action="{{ route('logout') }}">

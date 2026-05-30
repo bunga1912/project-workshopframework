@@ -16,6 +16,8 @@ use App\Http\Controllers\VendorController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\BarcodeController;
 use App\Http\Controllers\AntrianController;
+use App\Http\Controllers\AbsensiController;
+use App\Http\Controllers\MahasiswaController;
 
 Auth::routes(['register' => false]);
 
@@ -76,6 +78,33 @@ Route::get('/dev/bayar/{idpesanan}', function ($idpesanan) {
 });
 
 // ============================================
+// TESTING ONLY: Simulasi absen tanpa HP Android
+// (Hapus route ini sebelum dikumpulkan)
+// ============================================
+Route::get('/dev/absen/{serial}', function ($serial) {
+    $mahasiswa = \App\Models\Mahasiswa::where('nfc_serial', $serial)->first();
+    if (!$mahasiswa) {
+        return response()->json(['status' => 'error', 'message' => 'Kartu tidak terdaftar'], 404);
+    }
+    if ($mahasiswa->sudahAbsenHariIni()) {
+        return response()->json(['status' => 'warning', 'message' => $mahasiswa->nama . ' sudah absen hari ini.']);
+    }
+    $status = now()->hour < 8 ? 'hadir' : 'telat';
+    \App\Models\Absensi::create([
+        'mahasiswa_id' => $mahasiswa->id,
+        'waktu_absen'  => now(),
+        'status'       => $status,
+    ]);
+    return response()->json([
+        'status'     => 'ok',
+        'mahasiswa'  => $mahasiswa->nama,
+        'nim'        => $mahasiswa->nim,
+        'waktu'      => now()->format('H:i:s'),
+        'keterangan' => $status,
+    ]);
+});
+
+// ============================================
 // FIX: ROUTE FOTO HARUS PUBLIC
 // ============================================
 Route::get('/customer/foto/{id}', [CustomerController::class, 'foto'])
@@ -85,6 +114,13 @@ Route::get('/customer/foto/{id}', [CustomerController::class, 'foto'])
 // SSE - tanpa session & csrf (exclude di bootstrap/app.php)
 // ============================================
 Route::get('/sse/antrian', [AntrianController::class, 'stream'])->name('sse.antrian');
+
+// ============================================
+// NFC ABSENSI - PUBLIC (diakses dari HP Android)
+// Scanner harus bisa diakses tanpa login karena dipakai di HP
+// ============================================
+Route::get('/scanner', [AbsensiController::class, 'scanner'])->name('absensi.scanner');
+Route::post('/absensi/scan', [AbsensiController::class, 'scan'])->name('absensi.scan');
 
 // ============================================
 // ADMIN (LOGIN)
@@ -111,6 +147,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/get-kota/{provinsi_id}', [WilayahController::class, 'getKota']);
     Route::get('/get-kecamatan/{kota_id}', [WilayahController::class, 'getKecamatan']);
     Route::get('/get-kelurahan/{kecamatan_id}', [WilayahController::class, 'getKelurahan']);
+
+    // ----------------------------------------
+    // NFC ABSENSI - ADMIN (butuh login)
+    // ----------------------------------------
+    Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
+    Route::delete('/absensi/{id}', [AbsensiController::class, 'destroy'])->name('absensi.destroy');
+
+    Route::get('/mahasiswa', [MahasiswaController::class, 'index'])->name('mahasiswa.index');
+    Route::post('/mahasiswa', [MahasiswaController::class, 'store'])->name('mahasiswa.store');
+    Route::get('/mahasiswa/{id}/edit', [MahasiswaController::class, 'edit'])->name('mahasiswa.edit');
+    Route::put('/mahasiswa/{id}', [MahasiswaController::class, 'update'])->name('mahasiswa.update');
+    Route::delete('/mahasiswa/{id}', [MahasiswaController::class, 'destroy'])->name('mahasiswa.destroy');
+    Route::post('/mahasiswa/{id}/register-nfc', [MahasiswaController::class, 'registerNfc'])->name('mahasiswa.registerNfc');
 });
 
 // ============================================
