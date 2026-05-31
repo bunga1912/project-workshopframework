@@ -22,6 +22,9 @@
                     <i class="mdi mdi-nfc-tap"></i> Aktifkan NFC
                 </button>
 
+                {{-- SERIAL DEBUG (hapus setelah testing) --}}
+                <div id="debug-serial" class="mt-3 text-muted" style="font-size:12px;"></div>
+
                 {{-- HASIL SCAN --}}
                 <div id="hasil" class="mt-4"></div>
 
@@ -52,9 +55,8 @@
 const riwayat = [];
 
 async function startScan() {
-    // Cek dukungan browser
     if (!('NDEFReader' in window)) {
-        setStatus('danger', 'mdi-alert-circle', 'Browser tidak mendukung Web NFC. Gunakan Android Chrome ≥ 89.');
+        setStatus('danger', 'mdi-alert-circle', 'Browser tidak mendukung Web NFC. Gunakan Android Chrome >= 89.');
         return;
     }
 
@@ -67,6 +69,11 @@ async function startScan() {
         document.getElementById('btn-scan').innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Menunggu kartu...';
 
         ndef.addEventListener('reading', async ({ serialNumber, message }) => {
+
+            // TAMPILKAN SERIAL DI LAYAR (hapus setelah testing)
+            document.getElementById('debug-serial').innerHTML =
+                'Serial terbaca: <strong>' + serialNumber + '</strong>';
+
             // Baca isi record jika ada
             let isiRecord = '';
             for (const record of message.records) {
@@ -75,7 +82,7 @@ async function startScan() {
 
             // Kirim ke backend Laravel
             try {
-                const res = await fetch('{{ route("absensi.scan") }}', {
+                const res = await fetch('https://barley-raking-skewed.ngrok-free.dev/project-workshopframework/public/absensi/scan', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -87,19 +94,19 @@ async function startScan() {
                 const data = await res.json();
 
                 if (data.status === 'ok') {
-                    setStatus('success', 'mdi-check-circle', `✅ Absen berhasil: <strong>${data.mahasiswa}</strong> (${data.nim}) — ${data.waktu} [${data.keterangan}]`);
+                    setStatus('success', 'mdi-check-circle', 'Absen berhasil: <strong>' + data.mahasiswa + '</strong> (' + data.nim + ') — ' + data.waktu + ' [' + data.keterangan + ']');
                     tampilHasil('success', data);
                     tambahRiwayat(data, 'success');
                 } else if (data.status === 'warning') {
-                    setStatus('warning', 'mdi-alert', `⚠️ ${data.message}`);
+                    setStatus('warning', 'mdi-alert', data.message);
                     tampilHasil('warning', data);
                     tambahRiwayat(data, 'warning');
                 } else {
-                    setStatus('danger', 'mdi-alert-circle', `❌ ${data.message}`);
+                    setStatus('danger', 'mdi-alert-circle', data.message);
                     tampilHasil('danger', data);
                 }
             } catch (e) {
-                setStatus('danger', 'mdi-wifi-off', 'Gagal terhubung ke server. Periksa koneksi.');
+                setStatus('danger', 'mdi-wifi-off', 'Gagal terhubung ke server: ' + e.message);
             }
 
             // Reset tombol setelah 3 detik
@@ -123,42 +130,43 @@ async function startScan() {
 
 function setStatus(type, icon, msg) {
     const box = document.getElementById('status-box');
-    box.className = `alert alert-${type} py-2`;
-    box.innerHTML = `<i class="mdi ${icon}"></i> ${msg}`;
+    box.className = 'alert alert-' + type + ' py-2';
+    box.innerHTML = '<i class="mdi ' + icon + '"></i> ' + msg;
 }
 
 function tampilHasil(type, data) {
     const el = document.getElementById('hasil');
     if (data.status === 'ok') {
-        el.innerHTML = `
-            <div class="card border-${type}">
-                <div class="card-body py-3">
-                    <h5 class="font-weight-bold mb-1">${data.mahasiswa}</h5>
-                    <p class="mb-1 text-muted">${data.nim}</p>
-                    <span class="badge badge-${type}">${data.keterangan?.toUpperCase()}</span>
-                    <span class="ml-2 text-muted">${data.waktu}</span>
-                </div>
-            </div>`;
+        el.innerHTML =
+            '<div class="card border-' + type + '">' +
+                '<div class="card-body py-3">' +
+                    '<h5 class="font-weight-bold mb-1">' + data.mahasiswa + '</h5>' +
+                    '<p class="mb-1 text-muted">' + data.nim + '</p>' +
+                    '<span class="badge badge-' + type + '">' + (data.keterangan ? data.keterangan.toUpperCase() : '') + '</span>' +
+                    '<span class="ml-2 text-muted">' + data.waktu + '</span>' +
+                '</div>' +
+            '</div>';
     } else {
-        el.innerHTML = `<div class="alert alert-${type}">${data.message}</div>`;
+        el.innerHTML = '<div class="alert alert-' + type + '">' + data.message + '</div>';
     }
 }
 
 function tambahRiwayat(data, type) {
     const list = document.getElementById('riwayat-list');
-    document.getElementById('riwayat-kosong')?.remove();
+    const kosong = document.getElementById('riwayat-kosong');
+    if (kosong) kosong.remove();
 
     const item = document.createElement('li');
     item.className = 'list-group-item d-flex justify-content-between align-items-center';
-    item.innerHTML = `
-        <div>
-            <strong>${data.mahasiswa ?? '—'}</strong>
-            <small class="text-muted ml-2">${data.nim ?? ''}</small>
-        </div>
-        <div>
-            <span class="badge badge-${type}">${data.keterangan ?? data.status}</span>
-            <small class="text-muted ml-1">${data.waktu ?? ''}</small>
-        </div>`;
+    item.innerHTML =
+        '<div>' +
+            '<strong>' + (data.mahasiswa || '—') + '</strong>' +
+            '<small class="text-muted ml-2">' + (data.nim || '') + '</small>' +
+        '</div>' +
+        '<div>' +
+            '<span class="badge badge-' + type + '">' + (data.keterangan || data.status) + '</span>' +
+            '<small class="text-muted ml-1">' + (data.waktu || '') + '</small>' +
+        '</div>';
     list.prepend(item);
 }
 
